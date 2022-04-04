@@ -1,5 +1,6 @@
-import {TypeOrmModuleOptions} from '@nestjs/typeorm';
+import { TypeOrmModuleOptions } from '@nestjs/typeorm';
 import dotenv from 'dotenv';
+import path from 'path';
 
 dotenv.config();
 declare type TypeOrmSeedingOptions = {
@@ -13,9 +14,9 @@ const config: TypeOrmModuleOptions & TypeOrmSeedingOptions = {
   username: process.env.DB_USERNAME,
   password: process.env.DB_PASSWORD,
   database: process.env.DB_DATABASE,
-  entities: [__dirname + '/src/**/*.entity{.ts,.js}'],
-  migrations: [__dirname + '/src/common/database/migrations/*.ts'],
-  cli: {migrationsDir: 'src/common/database/migrations'},
+  entities: [path.join(__dirname, '/src/**/*.entity{.ts,.js}')],
+  migrations: [path.join(__dirname, '/src/common/database/migrations/*.ts')],
+  cli: { migrationsDir: 'src/common/database/migrations' },
   seeds: ['src/common/database/seeds/**/*.seed.ts'], // seed파일들을 생성할 경로
   factories: ['src/common/database/factories/**/*.factory.ts'],
   autoLoadEntities: true,
@@ -24,5 +25,4 @@ const config: TypeOrmModuleOptions & TypeOrmSeedingOptions = {
   logging: process.env.NODE_ENV !== 'production',
   keepConnectionAlive: true,
 };
-
 export = config;
