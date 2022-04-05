@@ -1,4 +1,8 @@
-import { ForbiddenException, Injectable } from '@nestjs/common';
+import {
+  ForbiddenException,
+  Injectable,
+  UnprocessableEntityException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import bcrypt from 'bcrypt';
@@ -36,6 +40,9 @@ export class UsersService {
     const Role = await this.roleRepository.findOne({
       where: { type },
     });
+    if (!Role) {
+      throw new UnprocessableEntityException();
+    }
     const hashedPassword = await bcrypt.hash(password, 12);
     const user = await this.usersRepository.save({
       email,
@@ -43,6 +50,7 @@ export class UsersService {
       password: hashedPassword,
       Role,
     });
+
     return user;
   }
 }
