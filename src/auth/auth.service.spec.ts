@@ -4,7 +4,6 @@ import { getRepositoryToken, TypeOrmModule } from '@nestjs/typeorm';
 import { Users } from '../users/entities/user.entity';
 import { Repository } from 'typeorm';
 import { createTestConfiguration } from '../utils/createt.test.configuration';
-import { AppModule } from '../app.module';
 import { ForbiddenException } from '@nestjs/common';
 import { NO_EXIST_USER, WRONG_USER_ACCOUNT } from '../users/constants/constant';
 import { Role } from '../users/entities/role.entity';
@@ -17,7 +16,6 @@ describe('AuthService', () => {
   beforeAll(async () => {
     const module: TestingModule = await Test.createTestingModule({
       imports: [
-        AppModule,
         TypeOrmModule.forRoot(createTestConfiguration([Users, Role])),
         TypeOrmModule.forFeature([Users]),
       ],
