@@ -3,7 +3,7 @@ import { AuthService } from './auth.service';
 import { getRepositoryToken, TypeOrmModule } from '@nestjs/typeorm';
 import { Users } from '../users/entities/user.entity';
 import { Repository } from 'typeorm';
-import { createTestConfiguration } from '../utils/testMemDB';
+import { createTestConfiguration } from '../utils/createt.test.configuration';
 import { AppModule } from '../app.module';
 import { ForbiddenException } from '@nestjs/common';
 import { NO_EXIST_USER, WRONG_USER_ACCOUNT } from '../users/constants/constant';
@@ -27,9 +27,8 @@ describe('AuthService', () => {
     service = module.get<AuthService>(AuthService);
   });
 
-  afterAll(() => {
-    repository.clear();
-    module.close();
+  afterAll(async () => {
+    await repository.clear();
   });
 
   it('should be defined', () => {
