@@ -14,7 +14,7 @@ describe('AuthService', () => {
   let service: AuthService;
   let repository: Repository<Users>;
   beforeAll(async () => {
-    const module: TestingModule = await Test.createTestingModule({
+    module = await Test.createTestingModule({
       imports: [
         TypeOrmModule.forRoot(createTestConfiguration([Users, Role])),
         TypeOrmModule.forFeature([Users]),
@@ -27,6 +27,7 @@ describe('AuthService', () => {
 
   afterAll(async () => {
     await repository.clear();
+    await module.close();
   });
 
   it('should be defined', () => {
