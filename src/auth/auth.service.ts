@@ -1,8 +1,9 @@
-import { Injectable } from '@nestjs/common';
+import { ForbiddenException, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import bcrypt from 'bcrypt';
 import { Repository } from 'typeorm';
 import { Users } from '../users/entities/user.entity';
+import { NO_EXIST_USER, WRONG_USER_ACCOUNT } from '../users/constants/constant';
 
 @Injectable()
 export class AuthService {
@@ -25,13 +26,13 @@ export class AuthService {
       relations: ['Role'],
     });
     if (!user) {
-      return null;
+      throw new ForbiddenException(NO_EXIST_USER);
     }
     const result = await bcrypt.compare(password, user.password);
     if (result) {
       const { password, ...userWithoutPassword } = user;
       return userWithoutPassword;
     }
-    return null;
+    throw new ForbiddenException(WRONG_USER_ACCOUNT);
   }
 }
