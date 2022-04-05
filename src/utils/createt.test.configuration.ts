@@ -1,7 +1,8 @@
 import { TypeOrmModuleOptions } from '@nestjs/typeorm';
+import dotenv from 'dotenv';
 
 type Entity = any;
-
+dotenv.config();
 export const createTestConfiguration = (
   entities: Entity[],
 ): TypeOrmModuleOptions => ({
@@ -12,7 +13,7 @@ export const createTestConfiguration = (
   password: process.env.DB_PASSWORD,
   database: process.env.DB_TEST_DATABASE,
   entities,
-  dropSchema: true,
+  dropSchema: false,
   synchronize: true,
   logging: false,
 });
