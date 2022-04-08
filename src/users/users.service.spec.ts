@@ -4,7 +4,7 @@ import { getRepositoryToken, TypeOrmModule } from '@nestjs/typeorm';
 import { Users } from './entities/user.entity';
 import { Role } from './entities/role.entity';
 import { Repository } from 'typeorm';
-import { createTestConfiguration } from '../utils/createt.test.configuration';
+import { createTestConfiguration } from '../config/createt.test.configuration';
 import bcrypt from 'bcrypt';
 import { ForbiddenException, HttpStatus } from '@nestjs/common';
 import { ALREADY_EXIST_USER } from './constants/constant';
