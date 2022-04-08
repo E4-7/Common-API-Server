@@ -8,7 +8,6 @@ import {
   NotFoundException,
   Post,
   Response,
-  UnauthorizedException,
   UseGuards,
 } from '@nestjs/common';
 import {
@@ -18,9 +17,9 @@ import {
   ApiOperation,
   ApiTags,
 } from '@nestjs/swagger';
-import { LocalAuthGuard } from '../auth/local-auth.guard';
-import { NotLoggedInGuard } from '../auth/not-logged-in.guard';
-import { LoggedInGuard } from '../auth/logged-in.guard';
+import { LocalAuthGuard } from '../auth/guard/local-auth.guard';
+import { NotLoggedInGuard } from '../common/guards/not-logged-in.guard';
+import { LoggedInGuard } from '../common/guards/logged-in.guard';
 import { User } from '../common/decorators/user.decorator';
 import { UsersService } from './users.service';
 import { Users } from './entities/user.entity';
@@ -39,12 +38,10 @@ export class UsersController {
     description: '성공',
     type: NoPasswordUserDto,
   })
+  @UseGuards(LoggedInGuard)
   @HttpCode(HttpStatus.OK)
   @Get()
   async getProfile(@User() user: Users) {
-    if (!user) {
-      throw new UnauthorizedException();
-    }
     return user;
   }
 

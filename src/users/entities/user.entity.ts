@@ -4,7 +4,10 @@ import {
   Entity,
   Index,
   JoinColumn,
+  JoinTable,
+  ManyToMany,
   ManyToOne,
+  OneToMany,
 } from 'typeorm';
 import { CommonEntity } from '../../common/abstract/common.entity';
 import { UserStatus } from '../constants/user-status.enum';
@@ -12,6 +15,8 @@ import { Role } from './role.entity';
 import { IsEmail, IsEnum, IsNotEmpty, IsString } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 import { UserRole } from '../constants/user-role.enum';
+import { Exams } from '../../exam/entities/exam.entity';
+import { ExamUsers } from '../../exam/entities/examusers.entity';
 
 @Index('email', ['email'], { unique: true })
 @Entity()
@@ -59,6 +64,7 @@ export class Users extends CommonEntity {
   @DeleteDateColumn()
   deletedAt: Date | null;
 
+  //역할 컬럼 시작
   @IsEnum(UserRole)
   @IsNotEmpty()
   @ApiProperty({
@@ -71,4 +77,32 @@ export class Users extends CommonEntity {
   })
   @JoinColumn([{ name: 'RoleId', referencedColumnName: 'id' }])
   Role: Role;
+
+  @Column('int', { name: 'RoleId', nullable: true })
+  RoleId: number | null;
+
+  //역할 컬럼 끝
+
+  //user<->exams 테이블 컬럼
+  @ManyToMany(() => Exams, (exams) => exams.Users)
+  @JoinTable({
+    name: 'examusers',
+    joinColumn: {
+      name: 'UserId',
+      referencedColumnName: 'id',
+    },
+    inverseJoinColumn: {
+      name: 'ExamId',
+      referencedColumnName: 'id',
+    },
+  })
+  Exams: Exams[];
+
+  //user->userexams 테이블 컬럼
+  @OneToMany(() => ExamUsers, (examusers) => examusers.User)
+  ExamUsers: ExamUsers[];
+
+  // 나의 Exams 컬럼
+  @OneToMany(() => Exams, (exams) => exams.Owner)
+  OwnedExams: Exams[];
 }

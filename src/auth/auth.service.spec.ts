@@ -3,7 +3,7 @@ import { AuthService } from './auth.service';
 import { getRepositoryToken, TypeOrmModule } from '@nestjs/typeorm';
 import { Users } from '../users/entities/user.entity';
 import { Repository } from 'typeorm';
-import { createTestConfiguration } from '../utils/createt.test.configuration';
+import { createTestConfiguration } from '../config/createt.test.configuration';
 import { ForbiddenException } from '@nestjs/common';
 import { NO_EXIST_USER, WRONG_USER_ACCOUNT } from '../users/constants/constant';
 import { Role } from '../users/entities/role.entity';
