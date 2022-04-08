@@ -3,6 +3,7 @@ import {
   Column,
   DeleteDateColumn,
   Entity,
+  Index,
   JoinColumn,
   ManyToMany,
   ManyToOne,
@@ -20,6 +21,7 @@ import { ExamStatus } from '../contants/exam-status.enum';
 import { Users } from '../../users/entities/user.entity';
 import { ExamUsers } from './examusers.entity';
 
+@Index('OwnerId', ['OwnerId'])
 @Entity()
 export class Exams extends CommonEntity {
   @IsString()
@@ -83,6 +85,9 @@ export class Exams extends CommonEntity {
   })
   ExamUsers: ExamUsers[];
   //owner
+  @Column('int', { name: 'OwnerId', nullable: true })
+  OwnerId: number | null;
+
   @ManyToOne(() => Users, (users) => users.Exams, {
     onDelete: 'SET NULL',
     onUpdate: 'CASCADE',

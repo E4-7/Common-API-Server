@@ -77,6 +77,10 @@ export class Users extends CommonEntity {
   })
   @JoinColumn([{ name: 'RoleId', referencedColumnName: 'id' }])
   Role: Role;
+
+  @Column('int', { name: 'RoleId', nullable: true })
+  RoleId: number | null;
+
   //역할 컬럼 끝
 
   //user<->exams 테이블 컬럼
