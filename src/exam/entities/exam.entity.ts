@@ -8,7 +8,7 @@ import {
 } from 'typeorm';
 import {
   IsBoolean,
-  IsDate,
+  IsDateString,
   IsEnum,
   IsNotEmpty,
   IsNumber,
@@ -29,7 +29,7 @@ export class Exam extends CommonEntity {
   @Column('varchar', { name: 'name', length: 50, nullable: false })
   name: string;
 
-  @IsDate()
+  @IsDateString()
   @IsNotEmpty()
   @ApiProperty({
     example: '2021-07-17T14:30:00+09:00',
