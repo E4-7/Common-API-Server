@@ -4,22 +4,24 @@ import {
   DeleteDateColumn,
   Entity,
   JoinColumn,
+  ManyToMany,
   ManyToOne,
+  OneToMany,
 } from 'typeorm';
 import {
   IsBoolean,
   IsDateString,
   IsEnum,
   IsNotEmpty,
-  IsNumber,
   IsString,
 } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 import { ExamStatus } from '../contants/exam-status.enum';
 import { Users } from '../../users/entities/user.entity';
+import { ExamUsers } from './examusers.entity';
 
 @Entity()
-export class Exam extends CommonEntity {
+export class Exams extends CommonEntity {
   @IsString()
   @IsNotEmpty()
   @ApiProperty({
@@ -73,17 +75,20 @@ export class Exam extends CommonEntity {
   status: ExamStatus;
 
   //UserId
-  @IsNumber()
-  @IsNotEmpty()
-  @ApiProperty({
-    example: '1',
-    description: '유저 id',
+  @ManyToMany(() => Users, (users) => users.Exams)
+  Users: Users[];
+
+  @OneToMany(() => ExamUsers, (examusers) => examusers.Exam, {
+    cascade: ['insert'],
   })
-  @ManyToOne(() => Users, (user) => user.id, {
-    onUpdate: 'CASCADE',
+  ExamUsers: ExamUsers[];
+  //owner
+  @ManyToOne(() => Users, (users) => users.Exams, {
     onDelete: 'SET NULL',
+    onUpdate: 'CASCADE',
   })
-  @JoinColumn([{ name: 'UserId', referencedColumnName: 'id' }])
-  User: Users;
+  @JoinColumn([{ name: 'OwnerId', referencedColumnName: 'id' }])
+  Owner: Users;
+
   //시험지id
 }
