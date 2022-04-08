@@ -18,8 +18,8 @@ import {
   ApiTags,
 } from '@nestjs/swagger';
 import { LocalAuthGuard } from '../auth/guard/local-auth.guard';
-import { NotLoggedInGuard } from '../auth/guard/not-logged-in.guard';
-import { LoggedInGuard } from '../auth/guard/logged-in.guard';
+import { NotLoggedInGuard } from '../common/guards/not-logged-in.guard';
+import { LoggedInGuard } from '../common/guards/logged-in.guard';
 import { User } from '../common/decorators/user.decorator';
 import { UsersService } from './users.service';
 import { Users } from './entities/user.entity';
