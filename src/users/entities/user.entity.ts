@@ -5,6 +5,7 @@ import {
   Index,
   JoinColumn,
   ManyToOne,
+  OneToMany,
 } from 'typeorm';
 import { CommonEntity } from '../../common/abstract/common.entity';
 import { UserStatus } from '../constants/user-status.enum';
@@ -12,6 +13,7 @@ import { Role } from './role.entity';
 import { IsEmail, IsEnum, IsNotEmpty, IsString } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 import { UserRole } from '../constants/user-role.enum';
+import { Exam } from '../../exam/entities/exam.entity';
 
 @Index('email', ['email'], { unique: true })
 @Entity()
@@ -71,4 +73,7 @@ export class Users extends CommonEntity {
   })
   @JoinColumn([{ name: 'RoleId', referencedColumnName: 'id' }])
   Role: Role;
+
+  @OneToMany(() => Exam, (exam) => exam.User)
+  Exams: Exam[];
 }
