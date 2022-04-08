@@ -5,15 +5,11 @@ import {
   Injectable,
 } from '@nestjs/common';
 import { Observable } from 'rxjs';
-import {
-  NEED_AUTHENTIFICATION,
-  NEED_LOGIN,
-} from '../../common/constants/constant';
+import { NEED_AUTHENTIFICATION, NEED_LOGIN } from '../constants/constant';
 import { Reflector } from '@nestjs/core';
 
 const matchRoles = (roles: number[], userRoles: number) => {
-  const result = roles.some((role) => role === userRoles);
-  return result;
+  return roles.some((role) => role === userRoles);
 };
 
 @Injectable()
@@ -32,7 +28,7 @@ export class RolesGuard implements CanActivate {
     if (!requiredRoles) return true;
 
     // Role이 있으면 Authentification이 필요한 것으로 가정
-    // 따라 logged-in.guard.ts파일 삭제
+    // 따라 logged-in.guards.ts파일 삭제
     const request = context.switchToHttp().getRequest();
     if (!request.isAuthenticated()) throw new ForbiddenException(NEED_LOGIN);
 
