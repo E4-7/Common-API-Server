@@ -2,6 +2,8 @@ import {
   BadRequestException,
   Inject,
   Injectable,
+  Logger,
+  LoggerService,
   UnauthorizedException,
 } from '@nestjs/common';
 import { CreateExamDto } from './dto/create-exam.dto';
@@ -10,13 +12,15 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Exams } from './entities/exam.entity';
 import { Connection, Repository } from 'typeorm';
 import { ExamUsers } from './entities/examusers.entity';
-import { WINSTON_MODULE_PROVIDER, WinstonLogger } from 'nest-winston';
-import { NEED_AUTHENTIFICATION } from '../common/constants/constant';
+import {
+  NEED_AUTHENTIFICATION,
+  UNKNOWN_ERR,
+} from '../common/constants/constant';
 
 @Injectable()
 export class ExamService {
   constructor(
-    @Inject(WINSTON_MODULE_PROVIDER) private readonly logger: WinstonLogger,
+    @Inject(Logger) private readonly logger: LoggerService,
     @InjectRepository(Exams) private examRepository: Repository<Exams>,
     @InjectRepository(ExamUsers)
     private examUsersRepository: Repository<ExamUsers>,
@@ -43,7 +47,7 @@ export class ExamService {
     } catch (error) {
       this.logger.error(error);
       await queryRunner.rollbackTransaction();
-      throw new BadRequestException('알 수 없는 에러로 실패했습니다');
+      throw new BadRequestException(UNKNOWN_ERR);
     } finally {
       await queryRunner.release();
     }
@@ -70,7 +74,7 @@ export class ExamService {
     return exam;
   }
 
-  async remove(userId: number, examId: number) {
+  async delete(userId: number, examId: number) {
     //사용자 인증 본인의 시험만 삭제 가능
     const exam = await this.examRepository.findOne({ id: +examId });
     if (!exam || exam.OwnerId !== userId) {
