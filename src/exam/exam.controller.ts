@@ -90,7 +90,7 @@ export class ExamController {
   @HttpCode(HttpStatus.NO_CONTENT)
   @Roles(UserRole.PROFESSOR)
   @Delete(':id')
-  async remove(@User() user: Users, @Param('id') id: string) {
-    await this.examService.remove(user.id, +id);
+  async delete(@User() user: Users, @Param('id') id: string) {
+    await this.examService.delete(user.id, +id);
   }
 }
