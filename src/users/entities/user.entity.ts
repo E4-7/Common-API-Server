@@ -12,9 +12,14 @@ import {
 import { CommonEntity } from '../../common/abstract/common.entity';
 import { UserStatus } from '../constants/user-status.enum';
 import { Role } from './role.entity';
-import { IsEmail, IsEnum, IsNotEmpty, IsString } from 'class-validator';
+import {
+  IsEmail,
+  IsEnum,
+  IsNotEmpty,
+  IsObject,
+  IsString,
+} from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
-import { UserRole } from '../constants/user-role.enum';
 import { Exams } from '../../exam/entities/exam.entity';
 import { ExamUsers } from '../../exam/entities/examusers.entity';
 
@@ -65,10 +70,10 @@ export class Users extends CommonEntity {
   deletedAt: Date | null;
 
   //역할 컬럼 시작
-  @IsEnum(UserRole)
+  @IsObject()
   @IsNotEmpty()
   @ApiProperty({
-    example: '0',
+    example: { type: 1 },
     description: '역할(조교, 교수)',
   })
   @ManyToOne(() => Role, (role) => role.Users, {

@@ -1,98 +1,105 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { UsersService } from './users.service';
-import { getRepositoryToken, TypeOrmModule } from '@nestjs/typeorm';
+import { getRepositoryToken } from '@nestjs/typeorm';
 import { Users } from './entities/user.entity';
 import { Role } from './entities/role.entity';
-import { Repository } from 'typeorm';
-import { createTestConfiguration } from '../config/createt.test.configuration';
-import bcrypt from 'bcrypt';
-import { ForbiddenException, HttpStatus } from '@nestjs/common';
+import {
+  ForbiddenException,
+  HttpStatus,
+  UnprocessableEntityException,
+} from '@nestjs/common';
 import { ALREADY_EXIST_USER } from './constants/constant';
 import { UserRole } from './constants/user-role.enum';
+import { MockRepository, mockRepository } from '../config/repository.type';
+import { userData, userDataAssistant } from './user.service.mock';
 
 describe('UsersService', () => {
   let service: UsersService;
-  let userRepository: Repository<Users>;
-  let roleRepository: Repository<Role>;
-  let user;
+  let userRepository: MockRepository<Users>;
+  let roleRepository: MockRepository<Role>;
   let module: TestingModule;
-  beforeAll(async () => {
+  beforeEach(async () => {
     module = await Test.createTestingModule({
-      imports: [
-        TypeOrmModule.forRoot(createTestConfiguration([Users, Role])),
-        TypeOrmModule.forFeature([Users, Role]),
+      providers: [
+        UsersService,
+        {
+          provide: getRepositoryToken(Users),
+          useValue: mockRepository(),
+        },
+        {
+          provide: getRepositoryToken(Role),
+          useValue: mockRepository(),
+        },
       ],
-      providers: [UsersService],
     }).compile();
-    userRepository = module.get<Repository<Users>>(getRepositoryToken(Users));
-    roleRepository = module.get<Repository<Role>>(getRepositoryToken(Role));
+    userRepository = module.get<MockRepository<Users>>(
+      getRepositoryToken(Users),
+    );
+    roleRepository = module.get<MockRepository<Role>>(getRepositoryToken(Role));
     service = module.get<UsersService>(UsersService);
-
-    //Role Mocking
-    await roleRepository.save({ id: 1, type: 2, description: '교수' });
-    await roleRepository.save({ id: 2, type: 1, description: '조교' });
-
-    const hashedPassword = await bcrypt.hash('thisispassword', 12);
-    user = await userRepository.save({
-      name: '조찬민',
-      password: hashedPassword,
-      email: 'happyjarban@gmail.com',
-    });
-  });
-
-  afterAll(async () => {
-    await roleRepository.delete({ id: 1 });
-    await roleRepository.delete({ id: 2 });
-    await userRepository.clear();
-    await module.close();
   });
 
   it('should be defined', () => {
     expect(service).toBeDefined();
   });
 
-  it('findByEmail은 이메일을 통해 유저를 찾아야 함', () => {
-    expect(service.findByEmail('happyjarban@gmail.com')).resolves.toEqual({
-      email: user.email,
-      id: user.id,
-      password: user.password,
+  it('findByEmail', () => {
+    const email = 'happyjarban@gmail.com';
+    userRepository.findOne.mockReturnValue(userData);
+    expect(service.findByEmail(email)).resolves.toEqual(userData);
+    expect(userRepository.findOne).toBeCalledWith({
+      where: { email },
+      select: ['id', 'email'],
     });
   });
 
-  describe('회원가입', () => {
-    it('아이디가 존재 O ', () => {
-      expect(
-        service.join('happyjarban@gmail.com', '조찬민', 'thisispassword'),
-      ).rejects.toThrowError(new ForbiddenException(ALREADY_EXIST_USER));
+  describe('join', () => {
+    const email = 'happyjarban@gmail.com';
+    const name = '조찬민';
+    const password = 'thisispassword';
+
+    it('이미 존재하는 아이디', () => {
+      userRepository.findOne.mockReturnValue(userData);
+      expect(service.join(email, name, password)).rejects.toThrowError(
+        new ForbiddenException(ALREADY_EXIST_USER),
+      );
     });
-    it('잘못된 role Id 줬을 경우', async () => {
+    it('잘못된 roleId 경우', async () => {
       try {
+        userRepository.findOne.mockReturnValue(null);
+        roleRepository.findOne.mockReturnValue(null);
+        const invalidRoleTypeID = 100;
         const data = await service.join(
-          'role@gmail.com',
-          '조찬민',
-          'thisispassword',
-          3,
+          email,
+          name,
+          password,
+          invalidRoleTypeID,
         );
       } catch (e) {
+        expect(e).toBeInstanceOf(UnprocessableEntityException);
         expect(e.response.statusCode).toBe(HttpStatus.UNPROCESSABLE_ENTITY);
       }
     });
-    it('아이디가 존재 x', async () => {
-      const data = await service.join(
-        'happyjarban2@gmail.com',
-        '조찬민',
-        'thisispassword',
-      );
-      expect(data.email).toBe('happyjarban2@gmail.com');
+    it('아이디가 존재 x(정상)[교수]', async () => {
+      userRepository.findOne.mockReturnValue(null);
+      userRepository.save.mockReturnValue(userData);
+      roleRepository.findOne.mockReturnValue({});
+      const data = await service.join(email, name, password);
+      expect(userRepository.save).toHaveBeenCalledTimes(1);
+      expect(data.Role.type).toBe(UserRole.PROFESSOR);
     });
     it('아이디가 존재 x(조교)', async () => {
+      userRepository.findOne.mockReturnValue(null);
+      userRepository.save.mockReturnValue(userDataAssistant);
+      roleRepository.findOne.mockReturnValue({});
       const data = await service.join(
-        'happyjarban3@gmail.com',
-        '조찬민',
-        'thisispassword',
+        email,
+        name,
+        password,
         UserRole.ASSISTANT,
       );
-      expect(data.Role.description).toBe('조교');
+      expect(userRepository.save).toHaveBeenCalledTimes(1);
+      expect(data.Role.type).toBe(UserRole.ASSISTANT);
     });
   });
 });

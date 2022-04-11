@@ -1,64 +1,84 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { AuthService } from './auth.service';
-import { getRepositoryToken, TypeOrmModule } from '@nestjs/typeorm';
+import { getRepositoryToken } from '@nestjs/typeorm';
 import { Users } from '../users/entities/user.entity';
-import { Repository } from 'typeorm';
-import { createTestConfiguration } from '../config/createt.test.configuration';
 import { ForbiddenException } from '@nestjs/common';
 import { NO_EXIST_USER, WRONG_USER_ACCOUNT } from '../users/constants/constant';
 import { Role } from '../users/entities/role.entity';
-import bcrypt from 'bcrypt';
+import { MockRepository, mockRepository } from '../config/repository.type';
+
+const userData = {
+  email: 'happyjarban10@gmail.com',
+  name: '조찬민',
+  deletedAt: null,
+  id: 10,
+  createdAt: '2022-04-11T05:33:50.255Z',
+  updatedAt: '2022-04-11T05:33:50.255Z',
+  status: 1,
+  Role: {
+    type: 2,
+  },
+  password: 'thisispassword',
+};
 
 describe('AuthService', () => {
   let module: TestingModule;
   let service: AuthService;
-  let repository: Repository<Users>;
-  beforeAll(async () => {
+  let userRepository: MockRepository<Users>;
+  beforeEach(async () => {
     module = await Test.createTestingModule({
-      imports: [
-        TypeOrmModule.forRoot(createTestConfiguration([Users, Role])),
-        TypeOrmModule.forFeature([Users]),
+      providers: [
+        AuthService,
+        {
+          provide: getRepositoryToken(Users),
+          useValue: mockRepository(),
+        },
+        {
+          provide: getRepositoryToken(Role),
+          useValue: mockRepository(),
+        },
       ],
-      providers: [AuthService],
     }).compile();
-    repository = module.get<Repository<Users>>(getRepositoryToken(Users));
+    userRepository = module.get<MockRepository<Users>>(
+      getRepositoryToken(Users),
+    );
     service = module.get<AuthService>(AuthService);
-  });
-
-  afterAll(async () => {
-    await repository.clear();
-    await module.close();
   });
 
   it('should be defined', () => {
     expect(service).toBeDefined();
   });
 
-  describe('passport strategy 유저(관리자) 로그인', () => {
-    let userId;
-    beforeAll(async () => {
-      const hashedPassword = await bcrypt.hash('thisispassword', 12);
-      const data = await repository.save({
-        email: 'happyjarban@gmail.com',
-        password: hashedPassword,
-        name: '조찬민',
-      });
-      userId = data.id;
+  describe('validateUser', () => {
+    const email = 'happyjarban@gmail.com';
+    const password = 'thisispassword';
+    it('유저가 존재하지 않을 경우', async () => {
+      //given
+      userRepository.createQueryBuilder().getOne.mockReturnValue(null);
+      //when
+      try {
+        await service.validateUser(email, password);
+      } catch (e) {
+        //then
+        expect(e).toBeInstanceOf(ForbiddenException);
+        expect(e.message).toBe(NO_EXIST_USER);
+      }
     });
-    it('유저가 존재하지 않을 경우 예외를 던진다.', async () => {
-      await expect(
-        service.validateUser('happyjarban2@gmail.com', 'thisispassword'),
-      ).rejects.toThrowError(new ForbiddenException(NO_EXIST_USER));
+    it('유저의 password가 일치하지 않을 경우', async () => {
+      //given
+      userRepository.createQueryBuilder().getOne.mockReturnValue(userData);
+      //when
+      try {
+        await service.validateUser(email, 'WrongPassword');
+      } catch (e) {
+        //then
+        expect(e).toBeInstanceOf(ForbiddenException);
+        expect(e.message).toBe(WRONG_USER_ACCOUNT);
+      }
     });
-    it('유저의 password가 일치하지 않을 경우, 예외를 던진다.', async () => {
-      await expect(
-        service.validateUser('happyjarban@gmail.com', 'thisispasword2'),
-      ).rejects.toThrowError(new ForbiddenException(WRONG_USER_ACCOUNT));
-    });
-    it('유저의 id, password가 일치하면, 유저의 정보를 반환한다.', async () => {
-      await expect(
-        service.validateUser('happyjarban@gmail.com', 'thisispassword'),
-      ).resolves.toBeInstanceOf(Object);
+    it('유저의 id, password가 일치', async () => {
+      userRepository.createQueryBuilder().getOne.mockReturnValue(userData);
+      expect(service.validateUser(email, password)).resolves.toEqual(userData);
     });
   });
 });

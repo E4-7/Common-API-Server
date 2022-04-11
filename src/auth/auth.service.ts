@@ -12,19 +12,23 @@ export class AuthService {
   ) {}
 
   async validateUser(email: string, password: string) {
-    const user = await this.usersRepository.findOne({
-      where: { email },
-      select: [
-        'id',
-        'email',
-        'password',
-        'createdAt',
-        'updatedAt',
-        'name',
-        'status',
-      ],
-      relations: ['Role'],
-    });
+    const user = await this.usersRepository
+      .createQueryBuilder('Users')
+      .leftJoin('Users.Role', 'Role')
+      .where('Users.email = :email', { email })
+      .select([
+        'Role.type',
+        'Users.id',
+        'Users.email',
+        'Users.password',
+        'Users.createdAt',
+        'Users.updatedAt',
+        'Users.name',
+        'Users.status',
+        'Users.password',
+      ])
+      .getOne();
+
     if (!user) {
       throw new ForbiddenException(NO_EXIST_USER);
     }

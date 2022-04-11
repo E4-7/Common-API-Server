@@ -8,6 +8,7 @@ const mockRepository = () => ({
     where: jest.fn().mockReturnThis(),
     select: jest.fn().mockReturnThis(),
     getRawMany: jest.fn().mockReturnThis(),
+    getOne: jest.fn().mockReturnThis(),
     getMany: jest.fn().mockReturnThis(),
   }),
   find: jest.fn(),
