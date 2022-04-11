@@ -21,7 +21,7 @@ export class UsersService {
   async findByEmail(email: string) {
     return this.usersRepository.findOne({
       where: { email },
-      select: ['id', 'email', 'password'],
+      select: ['id', 'email'],
     });
   }
 
@@ -31,16 +31,14 @@ export class UsersService {
     password: string,
     type: UserRole = UserRole.PROFESSOR,
   ) {
-    const existingUser = await this.usersRepository.findOne({
-      where: { email },
-    });
+    const existingUser = await this.findByEmail(email);
     if (existingUser) {
       throw new ForbiddenException(ALREADY_EXIST_USER);
     }
-    const Role = await this.roleRepository.findOne({
+    const roleData = await this.roleRepository.findOne({
       where: { type },
     });
-    if (!Role) {
+    if (!roleData) {
       throw new UnprocessableEntityException();
     }
     const hashedPassword = await bcrypt.hash(password, 12);
@@ -48,8 +46,12 @@ export class UsersService {
       email,
       name,
       password: hashedPassword,
-      Role,
+      Role: roleData,
     });
+    //내 정보조회, 로그인과 컬럼을 맞춰주기 위함
+    const { Role, ...exceptRoleUserData } = user;
+    exceptRoleUserData['Role'] = { type: Role.type };
+    delete user.RoleId;
 
     return user;
   }

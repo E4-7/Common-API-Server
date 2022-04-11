@@ -20,14 +20,19 @@ export class LocalSerializer extends PassportSerializer {
 
   async deserializeUser(userId: string, done: CallableFunction) {
     return await this.usersRepository
-      .findOneOrFail(
-        {
-          id: +userId,
-        },
-        {
-          relations: ['Role'],
-        },
-      )
+      .createQueryBuilder('Users')
+      .leftJoin('Users.Role', 'Role')
+      .where('Users.id = :id', { id: +userId })
+      .select([
+        'Role.type',
+        'Users.id',
+        'Users.email',
+        'Users.createdAt',
+        'Users.updatedAt',
+        'Users.name',
+        'Users.status',
+      ])
+      .getOne()
       .then((user) => {
         done(null, user);
       })
