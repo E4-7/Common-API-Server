@@ -5,7 +5,10 @@ import { Users } from '../users/entities/user.entity';
 import { ForbiddenException } from '@nestjs/common';
 import { NO_EXIST_USER, WRONG_USER_ACCOUNT } from '../users/constants/constant';
 import { Role } from '../users/entities/role.entity';
-import { MockRepository, mockRepository } from '../config/repository.type';
+import {
+  MockRepository,
+  mockRepository,
+} from '../common/constants/repository.type';
 
 const userData = {
   email: 'happyjarban10@gmail.com',

@@ -9,10 +9,12 @@ import { ValidationPipe } from '@nestjs/common';
 import { AppModule } from './app.module';
 import { HttpExceptionFilter } from './http-exception.filter';
 import {
-  WinstonModule,
   utilities as nestWinstonModuleUtilities,
+  WinstonModule,
 } from 'nest-winston';
 import winston from 'winston';
+import { ConfigService } from '@nestjs/config';
+
 declare const module: any;
 
 async function bootstrap() {
@@ -31,6 +33,7 @@ async function bootstrap() {
       ],
     }),
   });
+  const configService = app.get(ConfigService);
   app.useGlobalFilters(new HttpExceptionFilter());
   app.useGlobalPipes(
     new ValidationPipe({
@@ -45,7 +48,7 @@ async function bootstrap() {
   const config = new DocumentBuilder()
     .setTitle('E4/7 Swagger Docs')
     .setDescription('E4/7 Common Server Swagger API')
-    .setVersion('0.1')
+    .setVersion(process.env.npm_package_version)
     .addCookieAuth('connect.sid')
     .build();
   const document = SwaggerModule.createDocument(app, config);
@@ -56,7 +59,7 @@ async function bootstrap() {
     session({
       resave: false,
       saveUninitialized: false,
-      secret: process.env.COOKIE_SECRET,
+      secret: configService.get('auth.cookie_secret'),
       cookie: {
         httpOnly: true,
       },
@@ -66,11 +69,10 @@ async function bootstrap() {
   app.use(passport.initialize());
   app.use(passport.session());
 
-  const PORT = process.env.PORT || 3000;
+  const PORT = configService.get('app.port') || 3000;
 
   await app.listen(PORT);
   console.log(`server listening on port ${PORT}`);
-
   if (module.hot) {
     module.hot.accept();
     module.hot.dispose(() => app.close());
