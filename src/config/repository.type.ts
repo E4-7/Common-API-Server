@@ -14,24 +14,24 @@ const mockRepository = () => ({
   findOne: jest.fn(),
   create: jest.fn(),
   save: jest.fn(),
+  delete: jest.fn(),
 });
 
-class MockConnection {
-  createQueryRunner(mode?: 'master' | 'slave') {
-    return {
-      manager: {
-        save: jest.fn(),
-        update: jest.fn(),
-        create: jest.fn(),
-        getRepository: jest.fn().mockReturnThis(),
-      },
-      connect: jest.fn(),
-      release: jest.fn(),
-      startTrasaction: jest.fn(),
-      commitTransaction: jest.fn(),
-      rollbackTransaction: jest.fn(),
-    };
-  }
-}
+const mockConnection = () => ({
+  createQueryRunner: jest.fn().mockReturnValue({
+    manager: {
+      save: jest.fn().mockReturnValue({}),
+      update: jest.fn(),
+      delete: jest.fn(),
+      create: jest.fn().mockReturnValue({}),
+      getRepository: jest.fn().mockReturnThis(),
+    },
+    connect: jest.fn(),
+    release: jest.fn(),
+    startTransaction: jest.fn(),
+    commitTransaction: jest.fn(),
+    rollbackTransaction: jest.fn(),
+  }),
+});
 
-export { MockRepository, mockRepository, MockConnection };
+export { MockRepository, mockRepository, mockConnection };
