@@ -10,7 +10,10 @@ import {
 } from '@nestjs/common';
 import { ALREADY_EXIST_USER } from './constants/constant';
 import { UserRole } from './constants/user-role.enum';
-import { MockRepository, mockRepository } from '../config/repository.type';
+import {
+  MockRepository,
+  mockRepository,
+} from '../common/constants/repository.type';
 import { userData, userDataAssistant } from './user.service.mock';
 
 describe('UsersService', () => {
