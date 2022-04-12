@@ -12,10 +12,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Exams } from './entities/exam.entity';
 import { Connection, Repository } from 'typeorm';
 import { ExamUsers } from './entities/examusers.entity';
-import {
-  NEED_AUTHENTIFICATION,
-  UNKNOWN_ERR,
-} from '../common/constants/constant';
+import { NEED_AUTHENTIFICATION, UNKNOWN_ERR } from '../common/constants/error';
 
 @Injectable()
 export class ExamService {
