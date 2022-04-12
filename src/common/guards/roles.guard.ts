@@ -5,7 +5,7 @@ import {
   Injectable,
 } from '@nestjs/common';
 import { Observable } from 'rxjs';
-import { NEED_AUTHENTIFICATION, NEED_LOGIN } from '../constants/constant';
+import { NEED_AUTHENTIFICATION, NEED_LOGIN } from '../constants/error';
 import { Reflector } from '@nestjs/core';
 
 const matchRoles = (roles: number[], userRoles: number) => {
