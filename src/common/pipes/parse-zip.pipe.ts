@@ -4,12 +4,12 @@ import {
   PipeTransform,
   UnprocessableEntityException,
 } from '@nestjs/common';
-import { FileSize, Mimetype } from '../constants/file-extension.constant';
+import { FileSize, Mimetype } from '../constants/file-info.constant';
 import {
   NEED_FILE,
   NEED_FILE_10MB_SIZE,
   NEED_ZIP_FILE_EXTENSION,
-} from '../constants/error';
+} from '../constants/error.constant';
 
 @Injectable()
 export class ParsePdfPipe implements PipeTransform {

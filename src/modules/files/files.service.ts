@@ -10,7 +10,7 @@ import { File } from './entities/file.entity';
 import { Connection, Repository } from 'typeorm';
 import { ConfigService } from '@nestjs/config';
 import { InjectRepository } from '@nestjs/typeorm';
-import { NOT_FOUND_FILE_KEY } from '../common/constants/error';
+import { NOT_FOUND_FILE_KEY } from '../../common/constants/error.constant';
 
 @Injectable()
 export class FilesService {

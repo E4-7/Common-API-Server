@@ -8,7 +8,7 @@ import { Role } from '../users/entities/role.entity';
 import {
   MockRepository,
   mockRepository,
-} from '../common/constants/repository-mock.constant';
+} from '../../common/constants/repository-mock.constant';
 
 const userData = {
   email: 'happyjarban10@gmail.com',
