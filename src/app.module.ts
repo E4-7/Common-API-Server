@@ -16,16 +16,18 @@ import {
 } from 'nest-winston';
 import winston from 'winston';
 import { TransformInterceptor } from './common/interceptor/transform.interceptor';
+import { FilesModule } from './files/files.module';
 import appConfig from './config/app.config';
 import authConfig from './config/auth.config';
 import databaseConfig from './config/database.config';
 import Joi from 'joi';
+import awsConfig from './config/aws.config';
 
 @Module({
   imports: [
     ConfigModule.forRoot({
       envFilePath: `.env.${process.env.NODE_ENV}`,
-      load: [appConfig, authConfig, databaseConfig],
+      load: [appConfig, authConfig, databaseConfig, awsConfig],
       isGlobal: true,
       validationSchema: Joi.object({
         NODE_ENV: Joi.string()
@@ -44,6 +46,12 @@ import Joi from 'joi';
         DB_DATABASE: Joi.string().required(),
         SECRET: Joi.string().required(),
         COOKIE_SECRET: Joi.string().required(),
+        AWS_S3_BUCKET_NAME: Joi.string().required(),
+        AWS_ACCESS_KEY_ID: Joi.string().required(),
+        AWS_SECRET_ACCESS_KEY: Joi.string().required(),
+        AWS_REGION: Joi.string().required(),
+        AWS_S3_MAX_FILE_SIZE: Joi.string().required(),
+        FILE_DRIVER: Joi.string().valid('local', 's3').default('local'),
       }),
     }),
     TypeOrmModule.forRoot(ormconfig),
@@ -63,6 +71,7 @@ import Joi from 'joi';
         }),
       ],
     }),
+    FilesModule,
   ],
   controllers: [AppController],
   providers: [
