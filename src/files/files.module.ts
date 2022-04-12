@@ -22,5 +22,6 @@ import { ConfigService } from '@nestjs/config';
         }),
     },
   ],
+  exports: [FilesService],
 })
 export class FilesModule {}

@@ -1,4 +1,10 @@
-import { Injectable, LoggerService, NotFoundException } from '@nestjs/common';
+import {
+  Inject,
+  Injectable,
+  Logger,
+  LoggerService,
+  NotFoundException,
+} from '@nestjs/common';
 import { S3 } from 'aws-sdk';
 import { File } from './entities/file.entity';
 import { Connection, Repository } from 'typeorm';
@@ -9,7 +15,7 @@ import { NOT_FOUND_FILE_KEY } from '../common/constants/error';
 @Injectable()
 export class FilesService {
   constructor(
-    private logger: LoggerService,
+    @Inject(Logger) private logger: LoggerService,
     private readonly s3: S3,
     @InjectRepository(File) private fileRepository: Repository<File>,
     private connection: Connection,
