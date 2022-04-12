@@ -6,6 +6,6 @@ export default registerAs('app', () => ({
   host: process.env.APP_HOST,
   version: process.env.npm_package_version,
   port: process.env.APP_PORT,
-  backendDomain: process.env.BACKEND_DOMAIN,
-  frontendDomain: process.env.FRONTEND_DOMAIN,
+  backend_domain: process.env.BACKEND_DOMAIN,
+  frontend_domain: process.env.FRONTEND_DOMAIN,
 }));
