@@ -1,4 +1,4 @@
-import { CommonEntity } from '../../common/abstract/common.entity';
+import { CommonEntity } from '../../../common/abstract/common.entity';
 import {
   Column,
   DeleteDateColumn,

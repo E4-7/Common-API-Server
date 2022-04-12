@@ -9,7 +9,7 @@ import {
   ManyToOne,
   OneToMany,
 } from 'typeorm';
-import { CommonEntity } from '../../common/abstract/common.entity';
+import { CommonEntity } from '../../../common/abstract/common.entity';
 import { UserStatus } from '../constants/user-status.enum';
 import { Role } from './role.entity';
 import {

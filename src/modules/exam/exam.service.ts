@@ -15,7 +15,7 @@ import { ExamUsers } from './entities/examusers.entity';
 import {
   NEED_AUTHENTIFICATION,
   UNKNOWN_ERR,
-} from '../common/constants/error.constant';
+} from '../../common/constants/error.constant';
 
 @Injectable()
 export class ExamService {

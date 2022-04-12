@@ -13,8 +13,8 @@ import { ExamService } from './exam.service';
 import { CreateExamDto } from './dto/create-exam.dto';
 import { UpdateColumn } from './dto/update-exam.dto';
 import { UserRole } from '../users/constants/user-role.enum';
-import { Roles } from '../common/decorators/roles.decorator';
-import { User } from '../common/decorators/user.decorator';
+import { Roles } from '../../common/decorators/roles.decorator';
+import { User } from '../../common/decorators/user.decorator';
 import { Users } from '../users/entities/user.entity';
 import {
   ApiCookieAuth,

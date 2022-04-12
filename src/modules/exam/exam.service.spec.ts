@@ -7,10 +7,10 @@ import {
   mockConnection,
   mockRepository,
   MockRepository,
-} from '../common/constants/repository-mock.constant';
+} from '../../common/constants/repository-mock.constant';
 import { Logger, UnauthorizedException } from '@nestjs/common';
 import { Connection } from 'typeorm';
-import { NEED_AUTHENTIFICATION } from '../common/constants/error.constant';
+import { NEED_AUTHENTIFICATION } from '../../common/constants/error.constant';
 import {
   MockexamUserDataArray,
   MocknewExamDataColumn,

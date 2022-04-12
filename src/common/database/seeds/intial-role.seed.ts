@@ -1,7 +1,7 @@
 import { Connection } from 'typeorm';
 import { Factory, Seeder } from 'typeorm-seeding';
-import { Role } from '../../../users/entities/role.entity';
-import { UserRole } from '../../../users/constants/user-role.enum';
+import { Role } from '../../../modules/users/entities/role.entity';
+import { UserRole } from '../../../modules/users/constants/user-role.enum';
 
 export class CreateInitialData implements Seeder {
   public async run(factory: Factory, connection: Connection): Promise<any> {
