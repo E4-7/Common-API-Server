@@ -7,7 +7,7 @@ import session from 'express-session';
 import helmet from 'helmet';
 import { ValidationPipe } from '@nestjs/common';
 import { AppModule } from './app.module';
-import { HttpExceptionFilter } from './http-exception.filter';
+import { HttpExceptionFilter } from './common/filters/http-exception.filter';
 import {
   utilities as nestWinstonModuleUtilities,
   WinstonModule,
