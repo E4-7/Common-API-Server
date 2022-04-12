@@ -10,7 +10,7 @@ import {
 } from '../common/constants/repository-mock.constant';
 import { Logger, UnauthorizedException } from '@nestjs/common';
 import { Connection } from 'typeorm';
-import { NEED_AUTHENTIFICATION } from '../common/constants/error';
+import { NEED_AUTHENTIFICATION } from '../common/constants/error.constant';
 import {
   MockexamUserDataArray,
   MocknewExamDataColumn,

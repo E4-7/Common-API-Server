@@ -9,7 +9,7 @@ import {
   NEED_FILE,
   NEED_FILE_10MB_SIZE,
   NEED_ZIP_FILE_EXTENSION,
-} from '../constants/error';
+} from '../constants/error.constant';
 
 @Injectable()
 export class ParsePdfPipe implements PipeTransform {

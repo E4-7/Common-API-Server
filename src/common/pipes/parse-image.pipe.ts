@@ -9,7 +9,7 @@ import {
   NEED_FILE,
   NEED_FILE_10MB_SIZE,
   NEED_IMAGE_FILE_EXTENSION,
-} from '../constants/error';
+} from '../constants/error.constant';
 
 @Injectable()
 export class ParseImagePipe implements PipeTransform {
