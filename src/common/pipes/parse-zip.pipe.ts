@@ -4,7 +4,7 @@ import {
   PipeTransform,
   UnprocessableEntityException,
 } from '@nestjs/common';
-import { FileSize, Mimetype } from '../constants/file-extension.constant';
+import { FileSize, Mimetype } from '../constants/file-info.constant';
 import {
   NEED_FILE,
   NEED_FILE_10MB_SIZE,
