@@ -13,7 +13,7 @@ import { UserRole } from './constants/user-role.enum';
 import {
   MockRepository,
   mockRepository,
-} from '../common/constants/repository.type';
+} from '../common/constants/repository-mock.constant';
 import { userData, userDataAssistant } from './user.service.mock';
 
 describe('UsersService', () => {

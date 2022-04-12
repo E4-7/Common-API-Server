@@ -7,7 +7,7 @@ import {
   mockConnection,
   mockRepository,
   MockRepository,
-} from '../common/constants/repository.type';
+} from '../common/constants/repository-mock.constant';
 import { Logger, UnauthorizedException } from '@nestjs/common';
 import { Connection } from 'typeorm';
 import { NEED_AUTHENTIFICATION } from '../common/constants/error';
