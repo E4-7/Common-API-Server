@@ -52,7 +52,7 @@ describe('UsersService', () => {
     const email = 'happyjarban@gmail.com';
     userRepository.findOne.mockReturnValue(userData);
     expect(service.findByEmail(email)).resolves.toEqual(userData);
-    expect(userRepository.findOne).toBeCalledWith({
+    expect(userRepository.findOne).toHaveBeenCalledWith({
       where: { email },
       select: ['id', 'email'],
     });
