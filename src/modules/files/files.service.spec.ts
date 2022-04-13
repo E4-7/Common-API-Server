@@ -38,7 +38,7 @@ describe('FilesService', () => {
         ConfigService,
         {
           provide: S3,
-          useFactory: () => mockS3(),
+          useValue: mockS3(),
         },
       ],
     }).compile();
