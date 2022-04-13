@@ -2,7 +2,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { UsersService } from './users.service';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { Users } from './entities/user.entity';
-import { Role } from './entities/role.entity';
+import { Roles } from './entities/role.entity';
 import {
   ForbiddenException,
   HttpStatus,
@@ -19,7 +19,7 @@ import { userData, userDataAssistant } from './user.service.mock';
 describe('UsersService', () => {
   let service: UsersService;
   let userRepository: MockRepository<Users>;
-  let roleRepository: MockRepository<Role>;
+  let roleRepository: MockRepository<Roles>;
   let module: TestingModule;
   beforeEach(async () => {
     module = await Test.createTestingModule({
@@ -30,7 +30,7 @@ describe('UsersService', () => {
           useValue: mockRepository(),
         },
         {
-          provide: getRepositoryToken(Role),
+          provide: getRepositoryToken(Roles),
           useValue: mockRepository(),
         },
       ],
@@ -38,7 +38,9 @@ describe('UsersService', () => {
     userRepository = module.get<MockRepository<Users>>(
       getRepositoryToken(Users),
     );
-    roleRepository = module.get<MockRepository<Role>>(getRepositoryToken(Role));
+    roleRepository = module.get<MockRepository<Roles>>(
+      getRepositoryToken(Roles),
+    );
     service = module.get<UsersService>(UsersService);
   });
 

@@ -4,7 +4,7 @@ import { getRepositoryToken } from '@nestjs/typeorm';
 import { Users } from '../users/entities/user.entity';
 import { ForbiddenException } from '@nestjs/common';
 import { NO_EXIST_USER, WRONG_USER_ACCOUNT } from '../users/constants/constant';
-import { Role } from '../users/entities/role.entity';
+import { Roles } from '../users/entities/role.entity';
 import {
   MockRepository,
   mockRepository,
@@ -37,7 +37,7 @@ describe('AuthService', () => {
           useValue: mockRepository(),
         },
         {
-          provide: getRepositoryToken(Role),
+          provide: getRepositoryToken(Roles),
           useValue: mockRepository(),
         },
       ],

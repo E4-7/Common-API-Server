@@ -8,14 +8,14 @@ import { Repository } from 'typeorm';
 import bcrypt from 'bcrypt';
 import { Users } from './entities/user.entity';
 import { UserRole } from './constants/user-role.enum';
-import { Role } from './entities/role.entity';
+import { Roles } from './entities/role.entity';
 import { ALREADY_EXIST_USER } from './constants/constant';
 
 @Injectable()
 export class UsersService {
   constructor(
     @InjectRepository(Users) private usersRepository: Repository<Users>,
-    @InjectRepository(Role) private roleRepository: Repository<Role>,
+    @InjectRepository(Roles) private roleRepository: Repository<Roles>,
   ) {}
 
   async findByEmail(email: string) {

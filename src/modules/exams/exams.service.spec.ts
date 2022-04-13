@@ -1,5 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { ExamService } from './exam.service';
+import { ExamsService } from './exams.service';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { Exams } from './entities/exam.entity';
 import { ExamUsers } from './entities/examusers.entity';
@@ -15,12 +15,12 @@ import {
   MockexamUserDataArray,
   MocknewExamDataColumn,
   MockoneExamData,
-} from './exam.service.mock';
+} from './exams.service.mock';
 
 const myUserID = 1,
   myExamID = 1;
 describe('ExamService', () => {
-  let service: ExamService;
+  let service: ExamsService;
   let examRepository: MockRepository<Exams>;
   let examUsersRepository: MockRepository<ExamUsers>;
   let connection;
@@ -31,7 +31,7 @@ describe('ExamService', () => {
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [
-        ExamService,
+        ExamsService,
         {
           provide: getRepositoryToken(Exams),
           useValue: mockRepository(),
@@ -48,14 +48,14 @@ describe('ExamService', () => {
       ],
     }).compile();
     connection = module.get(Connection);
-    service = module.get<ExamService>(ExamService);
+    service = module.get<ExamsService>(ExamsService);
     examRepository = module.get<MockRepository<Exams>>(
       getRepositoryToken(Exams),
     );
     examUsersRepository = module.get<MockRepository<ExamUsers>>(
       getRepositoryToken(ExamUsers),
     );
-    newExamDataColumn = Object.assign({}, MockexamUserDataArray);
+    examUserDataArray = Object.assign({}, MockexamUserDataArray);
     oneExamData = Object.assign({}, MockoneExamData);
     newExamDataColumn = Object.assign({}, MocknewExamDataColumn);
   });
