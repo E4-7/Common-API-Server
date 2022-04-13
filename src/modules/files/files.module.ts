@@ -20,6 +20,7 @@ import { ConfigService } from '@nestjs/config';
           region: configService.get('file.aws_region'),
         }),
     },
+    Logger,
   ],
   exports: [FilesService],
 })
