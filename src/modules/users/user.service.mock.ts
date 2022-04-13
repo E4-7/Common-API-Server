@@ -1,7 +1,7 @@
 import { UserRole } from './constants/user-role.enum';
 
 const userData = {
-  email: 'happyjarban9@gmail.com',
+  email: 'happyjarban@gmail.com',
   name: '조찬민',
   deletedAt: null,
   id: 9,

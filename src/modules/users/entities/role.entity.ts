@@ -4,7 +4,7 @@ import { UserRole } from '../constants/user-role.enum';
 import { Users } from './user.entity';
 
 @Entity()
-export class Role extends CommonEntity {
+export class Roles extends CommonEntity {
   @Column('enum', {
     name: 'type',
     enum: UserRole,

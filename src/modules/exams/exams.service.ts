@@ -18,7 +18,7 @@ import {
 } from '../../common/constants/error.constant';
 
 @Injectable()
-export class ExamService {
+export class ExamsService {
   constructor(
     @Inject(Logger) private readonly logger: LoggerService,
     @InjectRepository(Exams) private examRepository: Repository<Exams>,
@@ -56,8 +56,8 @@ export class ExamService {
   async findAll(userId: number) {
     return await this.examUsersRepository
       .createQueryBuilder('ExamUsers')
-      .select(['exam', 'ExamUsers.createdAt'])
-      .leftJoin('ExamUsers.Exam', 'exam')
+      .select(['exams', 'ExamUsers.createdAt'])
+      .leftJoin('ExamUsers.Exam', 'exams')
       .where('ExamUsers.UserId = :userId', { userId })
       .getMany();
   }

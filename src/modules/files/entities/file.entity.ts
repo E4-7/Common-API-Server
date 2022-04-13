@@ -4,7 +4,7 @@ import { ApiProperty } from '@nestjs/swagger';
 import { CommonEntity } from '../../../common/abstract/common.entity';
 
 @Entity()
-export class File extends CommonEntity {
+export class Files extends CommonEntity {
   @IsString()
   @IsNotEmpty()
   @Column({ unique: true })

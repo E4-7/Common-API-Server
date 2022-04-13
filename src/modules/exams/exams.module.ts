@@ -1,13 +1,13 @@
 import { Logger, Module } from '@nestjs/common';
-import { ExamService } from './exam.service';
-import { ExamController } from './exam.controller';
+import { ExamsService } from './exams.service';
+import { ExamsController } from './exams.controller';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Exams } from './entities/exam.entity';
 import { ExamUsers } from './entities/examusers.entity';
 
 @Module({
   imports: [TypeOrmModule.forFeature([Exams, ExamUsers])],
-  controllers: [ExamController],
-  providers: [ExamService, Logger],
+  controllers: [ExamsController],
+  providers: [ExamsService, Logger],
 })
-export class ExamModule {}
+export class ExamsModule {}

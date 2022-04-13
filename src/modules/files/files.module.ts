@@ -2,15 +2,14 @@ import { Logger, Module } from '@nestjs/common';
 import { FilesService } from './files.service';
 import { S3 } from 'aws-sdk';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { File } from './entities/file.entity';
+import { Files } from './entities/file.entity';
 import { ConfigService } from '@nestjs/config';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([File])],
+  imports: [TypeOrmModule.forFeature([Files])],
   providers: [
     FilesService,
     ConfigService,
-    Logger,
     {
       provide: S3,
       inject: [ConfigService],
@@ -21,6 +20,7 @@ import { ConfigService } from '@nestjs/config';
           region: configService.get('file.aws_region'),
         }),
     },
+    Logger,
   ],
   exports: [FilesService],
 })
