@@ -4,12 +4,11 @@ import { getRepositoryToken } from '@nestjs/typeorm';
 import { Users } from '../users/entities/user.entity';
 import { ForbiddenException } from '@nestjs/common';
 import { NO_EXIST_USER, WRONG_USER_ACCOUNT } from '../users/constants/constant';
-import { Roles } from '../users/entities/role.entity';
+import { Role } from '../users/entities/role.entity';
 import {
   MockRepository,
   mockRepository,
 } from '../../common/constants/repository-mock.constant';
-import bcrypt from 'bcrypt';
 
 const userData = {
   email: 'happyjarban10@gmail.com',
@@ -38,7 +37,7 @@ describe('AuthService', () => {
           useValue: mockRepository(),
         },
         {
-          provide: getRepositoryToken(Roles),
+          provide: getRepositoryToken(Role),
           useValue: mockRepository(),
         },
       ],
@@ -81,19 +80,8 @@ describe('AuthService', () => {
       }
     });
     it('유저의 id, password가 일치', async () => {
-      const userDataHashPassword = Object.assign({}, userData);
-      userDataHashPassword.Role = Object.assign({}, userData.Role);
-      userDataHashPassword.password = await bcrypt.hash(
-        userDataHashPassword.password,
-        12,
-      );
-      const { password, ...userWithoutPassword } = userData;
-      userRepository
-        .createQueryBuilder()
-        .getOne.mockReturnValue(userDataHashPassword);
-      expect(service.validateUser(email, password)).resolves.toEqual(
-        userWithoutPassword,
-      );
+      userRepository.createQueryBuilder().getOne.mockReturnValue(userData);
+      expect(service.validateUser(email, password)).resolves.toEqual(userData);
     });
   });
 });

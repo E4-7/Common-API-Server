@@ -2,7 +2,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { UsersService } from './users.service';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { Users } from './entities/user.entity';
-import { Roles } from './entities/role.entity';
+import { Role } from './entities/role.entity';
 import {
   ForbiddenException,
   HttpStatus,
@@ -19,7 +19,7 @@ import { userData, userDataAssistant } from './user.service.mock';
 describe('UsersService', () => {
   let service: UsersService;
   let userRepository: MockRepository<Users>;
-  let roleRepository: MockRepository<Roles>;
+  let roleRepository: MockRepository<Role>;
   let module: TestingModule;
   beforeEach(async () => {
     module = await Test.createTestingModule({
@@ -30,7 +30,7 @@ describe('UsersService', () => {
           useValue: mockRepository(),
         },
         {
-          provide: getRepositoryToken(Roles),
+          provide: getRepositoryToken(Role),
           useValue: mockRepository(),
         },
       ],
@@ -38,9 +38,7 @@ describe('UsersService', () => {
     userRepository = module.get<MockRepository<Users>>(
       getRepositoryToken(Users),
     );
-    roleRepository = module.get<MockRepository<Roles>>(
-      getRepositoryToken(Roles),
-    );
+    roleRepository = module.get<MockRepository<Role>>(getRepositoryToken(Role));
     service = module.get<UsersService>(UsersService);
   });
 
@@ -52,7 +50,7 @@ describe('UsersService', () => {
     const email = 'happyjarban@gmail.com';
     userRepository.findOne.mockReturnValue(userData);
     expect(service.findByEmail(email)).resolves.toEqual(userData);
-    expect(userRepository.findOne).toHaveBeenCalledWith({
+    expect(userRepository.findOne).toBeCalledWith({
       where: { email },
       select: ['id', 'email'],
     });

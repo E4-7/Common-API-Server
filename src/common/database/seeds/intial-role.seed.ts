@@ -1,6 +1,6 @@
 import { Connection } from 'typeorm';
 import { Factory, Seeder } from 'typeorm-seeding';
-import { Roles } from '../../../modules/users/entities/role.entity';
+import { Role } from '../../../modules/users/entities/role.entity';
 import { UserRole } from '../../../modules/users/constants/user-role.enum';
 
 export class CreateInitialData implements Seeder {
@@ -11,7 +11,7 @@ export class CreateInitialData implements Seeder {
     await connection
       .createQueryBuilder()
       .insert()
-      .into(Roles)
+      .into(Role)
       .values([
         { type: UserRole.PROFESSOR, description: '교수' },
         { type: UserRole.ASSISTANT, description: '조교' },

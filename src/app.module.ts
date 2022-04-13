@@ -6,7 +6,7 @@ import { LoggerMiddleware } from './common/middlewares/logger.middleware';
 import { UsersModule } from './modules/users/users.module';
 import { AuthModule } from './modules/auth/auth.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { ExamsModule } from './modules/exams/exams.module';
+import { ExamModule } from './modules/exam/exam.module';
 import * as ormconfig from '../ormconfig';
 import { APP_GUARD, APP_INTERCEPTOR } from '@nestjs/core';
 import { RolesGuard } from './common/guards/roles.guard';
@@ -57,7 +57,7 @@ import awsConfig from './config/aws.config';
     TypeOrmModule.forRoot(ormconfig),
     UsersModule,
     AuthModule,
-    ExamsModule,
+    ExamModule,
     WinstonModule.forRoot({
       transports: [
         new winston.transports.Console({

@@ -9,7 +9,7 @@ import {
   Patch,
   Post,
 } from '@nestjs/common';
-import { ExamsService } from './exams.service';
+import { ExamService } from './exam.service';
 import { CreateExamDto } from './dto/create-exam.dto';
 import { UpdateColumn } from './dto/update-exam.dto';
 import { UserRole } from '../users/constants/user-role.enum';
@@ -29,8 +29,8 @@ import { myExamDto } from './dto/my-exam.dto';
 
 @ApiTags('EXAMS')
 @Controller('api/exams')
-export class ExamsController {
-  constructor(private readonly examService: ExamsService) {}
+export class ExamController {
+  constructor(private readonly examService: ExamService) {}
 
   @ApiCookieAuth('connect.sid')
   @ApiOperation({ summary: '시험 만들기' })

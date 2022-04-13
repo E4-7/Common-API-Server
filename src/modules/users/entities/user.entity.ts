@@ -11,7 +11,7 @@ import {
 } from 'typeorm';
 import { CommonEntity } from '../../../common/abstract/common.entity';
 import { UserStatus } from '../constants/user-status.enum';
-import { Roles } from './role.entity';
+import { Role } from './role.entity';
 import {
   IsEmail,
   IsEnum,
@@ -20,8 +20,8 @@ import {
   IsString,
 } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
-import { Exams } from '../../exams/entities/exam.entity';
-import { ExamUsers } from '../../exams/entities/examusers.entity';
+import { Exams } from '../../exam/entities/exam.entity';
+import { ExamUsers } from '../../exam/entities/examusers.entity';
 
 @Index('email', ['email'], { unique: true })
 @Entity()
@@ -76,12 +76,12 @@ export class Users extends CommonEntity {
     example: { type: 1 },
     description: '역할(조교, 교수)',
   })
-  @ManyToOne(() => Roles, (role) => role.Users, {
+  @ManyToOne(() => Role, (role) => role.Users, {
     onDelete: 'SET NULL',
     onUpdate: 'CASCADE',
   })
   @JoinColumn([{ name: 'RoleId', referencedColumnName: 'id' }])
-  Role: Roles;
+  Role: Role;
 
   @Column('int', { name: 'RoleId', nullable: true })
   RoleId: number | null;
