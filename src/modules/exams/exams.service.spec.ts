@@ -16,11 +16,16 @@ import {
   MocknewExamDataColumn,
   MockoneExamData,
 } from './exams.service.mock';
+import { Files } from '../files/entities/file.entity';
+import { FilesService } from '../files/files.service';
+import { mockFileService } from '../files/files.mock';
 
 const myUserID = 1,
   myExamID = 1;
+
 describe('ExamService', () => {
   let service: ExamsService;
+  let fileService: FilesService;
   let examRepository: MockRepository<Exams>;
   let examUsersRepository: MockRepository<ExamUsers>;
   let connection;
@@ -30,6 +35,13 @@ describe('ExamService', () => {
   let oneExamData;
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
+      imports: [
+        {
+          module: class FakeModule {},
+          providers: [{ provide: FilesService, useValue: mockFileService }],
+          exports: [FilesService],
+        },
+      ],
       providers: [
         ExamsService,
         {
@@ -38,6 +50,10 @@ describe('ExamService', () => {
         },
         {
           provide: getRepositoryToken(ExamUsers),
+          useValue: mockRepository(),
+        },
+        {
+          provide: getRepositoryToken(Files),
           useValue: mockRepository(),
         },
         Logger,
@@ -49,6 +65,7 @@ describe('ExamService', () => {
     }).compile();
     connection = module.get(Connection);
     service = module.get<ExamsService>(ExamsService);
+    fileService = module.get(FilesService);
     examRepository = module.get<MockRepository<Exams>>(
       getRepositoryToken(Exams),
     );
@@ -73,7 +90,7 @@ describe('ExamService', () => {
       expect(examUsersRepository.createQueryBuilder).toHaveBeenCalledTimes(1);
       expect(
         examUsersRepository.createQueryBuilder().leftJoin,
-      ).toHaveBeenCalledTimes(1);
+      ).toHaveBeenCalledTimes(2);
     });
     it('성공 테스트', async () => {
       //given
@@ -120,12 +137,15 @@ describe('ExamService', () => {
   });
 
   describe('update', () => {
-    it('fineOne 메소드 작동여부', async () => {
+    it('fineOne 메소드 작동', async () => {
       try {
         await service.update(-1, -1, newExamDataColumn);
       } catch (e) {}
       expect(examRepository.findOne).toHaveBeenCalledTimes(1);
-      expect(examRepository.findOne).toHaveBeenCalledWith({ id: -1 });
+      expect(examRepository.findOne).toHaveBeenCalledWith({
+        where: { id: -1 },
+        relations: ['ExamPaper'],
+      });
     });
     it('본인의 시험번호가 아닐 경우', async () => {
       try {
@@ -200,6 +220,37 @@ describe('ExamService', () => {
       //then
       expect(examRepository.delete).toHaveBeenCalledTimes(1);
       expect(examRepository.delete).toHaveBeenCalledWith({ id: myExamID });
+    });
+  });
+
+  describe('uploadPaper', () => {
+    it('examId가 존재 x or 시험이 내 주최가 아님', async () => {
+      try {
+        examRepository.findOne.mockResolvedValue(oneExamData);
+        //when
+        await service.update(2, myExamID, newExamDataColumn);
+      } catch (e) {
+        //then
+        expect(e).toBeInstanceOf(UnauthorizedException);
+        expect(e.message).toBe(NEED_AUTHENTIFICATION);
+      }
+    });
+    it('시험지가 없는 경우 시험지를 만들고 추가함', async () => {
+      examRepository.findOne.mockResolvedValue(oneExamData);
+      //when
+      await service.uploadPaper(myUserID, myExamID, newExamDataColumn);
+      expect(fileService.deleteFile).toHaveBeenCalledTimes(0);
+      expect(fileService.uploadFile).toHaveBeenCalledWith(newExamDataColumn);
+      expect(examRepository.save).toHaveBeenCalledTimes(1);
+    });
+    it('시험지가 있는 경우 시험지를 삭제하고 추가함', async () => {
+      const haveExamPaper = Object.assign({}, oneExamData);
+      haveExamPaper.ExamPaper = { key: 'aa' };
+      examRepository.findOne.mockResolvedValue(haveExamPaper);
+      await service.uploadPaper(myUserID, myExamID, newExamDataColumn);
+      expect(fileService.deleteFile).toHaveBeenCalledTimes(1);
+      expect(fileService.uploadFile).toHaveBeenCalledWith(newExamDataColumn);
+      expect(examRepository.save).toHaveBeenCalledTimes(1);
     });
   });
 });
