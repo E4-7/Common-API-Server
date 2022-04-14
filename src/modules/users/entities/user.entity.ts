@@ -67,7 +67,7 @@ export class Users extends CommonEntity {
   status: UserStatus;
 
   @DeleteDateColumn()
-  deletedAt: Date | null;
+  deleted_at: Date | null;
 
   //역할 컬럼 시작
   @IsObject()

@@ -1,14 +1,15 @@
 const MockexamUserDataArray = [
   {
-    createdAt: '2022-04-08T14:56:02.045Z',
+    created_at: '2022-04-08T14:56:02.045Z',
     Exam: {
       id: 1,
-      createdAt: '2022-04-08T14:30:40.122Z',
-      updatedAt: '2022-04-08T14:30:40.122Z',
+      created_at: '2022-04-08T14:30:40.122Z',
+      updated_at: '2022-04-08T14:30:40.122Z',
       name: '운영체제 3반',
       exam_time: '2021-07-17T05:30:00.000Z',
       is_openbook: true,
-      deletedAt: null,
+      ExamPaper: null,
+      deleted_at: null,
       status: 1,
       OwnerId: 1,
     },
@@ -19,10 +20,11 @@ const MockoneExamData = {
   exam_time: '2021-07-17T14:30:00+09:00',
   is_openbook: true,
   name: '운영체제 3반',
-  deletedAt: null,
+  deleted_at: null,
   id: 1,
-  createdAt: '2022-04-10T16:30:23.761Z',
-  updatedAt: '2022-04-10T16:30:23.761Z',
+  ExamPaper: null,
+  created_at: '2022-04-10T16:30:23.761Z',
+  updated_at: '2022-04-10T16:30:23.761Z',
   status: 1,
 };
 const MocknewExamDataColumn = {

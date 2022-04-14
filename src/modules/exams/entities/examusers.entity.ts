@@ -14,10 +14,10 @@ import { Users } from '../../users/entities/user.entity';
 @Entity('examusers')
 export class ExamUsers {
   @CreateDateColumn()
-  createdAt: Date;
+  created_at: Date;
 
   @UpdateDateColumn()
-  updatedAt: Date;
+  updated_at: Date;
 
   @Column('int', { primary: true, name: 'ExamId' })
   ExamId: number;

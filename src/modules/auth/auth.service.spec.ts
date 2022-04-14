@@ -14,10 +14,10 @@ import bcrypt from 'bcrypt';
 const userData = {
   email: 'happyjarban10@gmail.com',
   name: '조찬민',
-  deletedAt: null,
+  deleted_at: null,
   id: 10,
-  createdAt: '2022-04-11T05:33:50.255Z',
-  updatedAt: '2022-04-11T05:33:50.255Z',
+  created_at: '2022-04-11T05:33:50.255Z',
+  updated_at: '2022-04-11T05:33:50.255Z',
   status: 1,
   Role: {
     type: 2,

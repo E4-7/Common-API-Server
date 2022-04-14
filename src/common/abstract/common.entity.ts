@@ -23,7 +23,7 @@ export abstract class CommonEntity {
     description: '생성일시',
   })
   @CreateDateColumn()
-  createdAt: Date;
+  created_at: Date;
 
   @IsDate()
   @IsNotEmpty()
@@ -32,5 +32,5 @@ export abstract class CommonEntity {
     description: '수정일시',
   })
   @UpdateDateColumn()
-  updatedAt: Date;
+  updated_at: Date;
 }
