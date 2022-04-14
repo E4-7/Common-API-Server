@@ -1,7 +1,8 @@
-import { Column, Entity } from 'typeorm';
+import { Column, Entity, OneToOne } from 'typeorm';
 import { IsNotEmpty, IsNumber, IsString } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 import { CommonEntity } from '../../../common/abstract/common.entity';
+import { Exams } from '../../exams/entities/exam.entity';
 
 @Entity()
 export class Files extends CommonEntity {
@@ -49,4 +50,8 @@ export class Files extends CommonEntity {
     description: '파일 url',
   })
   url: string;
+
+  //시험지 -> 시험
+  @OneToOne(() => Exams, (exams) => exams.ExamPaper)
+  Exam: Exams;
 }
