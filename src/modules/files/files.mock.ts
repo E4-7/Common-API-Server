@@ -18,4 +18,9 @@ const mockFileUpload = {
   originalname: oneFile.originalname,
   url: 'url',
 };
-export { mockFileUpload, oneFile };
+
+const mockFileService = {
+  uploadFile: jest.fn().mockResolvedValue({ data: 'data' }),
+  deleteFile: jest.fn().mockResolvedValue({ data: 'data' }),
+};
+export { mockFileUpload, oneFile, mockFileService };
