@@ -28,7 +28,7 @@ export class FilesService {
   async uploadFile(fileInBody: Express.Multer.File) {
     const { size, mimetype, originalname } = fileInBody;
     try {
-      const uploadResult = await this.s3
+      const uploadToS3Result = await this.s3
         .upload({
           Bucket: this.configService.get('file.aws_s3_bucket_name'),
           Key: `files/${new Date().valueOf()}/${originalname}`,
@@ -36,14 +36,14 @@ export class FilesService {
           ContentType: fileInBody.mimetype,
         })
         .promise();
-      const file = await this.fileRepository.save({
-        key: uploadResult.Key,
+      const uploadToDBResult = await this.fileRepository.save({
+        key: uploadToS3Result.Key,
         size,
         mimetype,
         original_name: originalname,
-        url: uploadResult.Location,
+        url: uploadToS3Result.Location,
       });
-      return file;
+      return uploadToDBResult;
     } catch (error) {
       this.logger.error(error);
       throw new InternalServerErrorException(UNKNOWN_ERR);
