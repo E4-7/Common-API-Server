@@ -8,6 +8,7 @@ import {
   ManyToMany,
   ManyToOne,
   OneToMany,
+  OneToOne,
 } from 'typeorm';
 import {
   IsBoolean,
@@ -20,6 +21,8 @@ import { ApiProperty } from '@nestjs/swagger';
 import { ExamStatus } from '../contants/exam-status.enum';
 import { Users } from '../../users/entities/user.entity';
 import { ExamUsers } from './examusers.entity';
+import { Files } from '../../files/entities/file.entity';
+import { ApiModelProperty } from '@nestjs/swagger/dist/decorators/api-model-property.decorator';
 
 @Index('OwnerId', ['OwnerId'])
 @Entity()
@@ -61,7 +64,7 @@ export class Exams extends CommonEntity {
   is_openbook: boolean;
 
   @DeleteDateColumn()
-  deletedAt: Date | null;
+  deleted_at: Date | null;
 
   @IsEnum(ExamStatus)
   @IsNotEmpty()
@@ -95,5 +98,10 @@ export class Exams extends CommonEntity {
   @JoinColumn([{ name: 'OwnerId', referencedColumnName: 'id' }])
   Owner: Users;
 
-  //시험지id
+  @ApiModelProperty({ type: Files })
+  @OneToOne(() => Files, (files) => files.Exam, {
+    onDelete: 'SET NULL',
+  })
+  @JoinColumn([{ name: 'PaperId', referencedColumnName: 'id' }])
+  ExamPaper: Files;
 }

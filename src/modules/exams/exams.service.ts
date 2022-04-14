@@ -16,6 +16,7 @@ import {
   NEED_AUTHENTIFICATION,
   UNKNOWN_ERR,
 } from '../../common/constants/error.constant';
+import { FilesService } from '../files/files.service';
 
 @Injectable()
 export class ExamsService {
@@ -24,6 +25,7 @@ export class ExamsService {
     @InjectRepository(Exams) private examRepository: Repository<Exams>,
     @InjectRepository(ExamUsers)
     private examUsersRepository: Repository<ExamUsers>,
+    private fileService: FilesService,
     private connection: Connection,
   ) {}
 
@@ -37,6 +39,7 @@ export class ExamsService {
       exam.exam_time = createExamDto.exam_time;
       exam.is_openbook = createExamDto.is_openbook;
       exam.name = createExamDto.name;
+      exam.ExamPaper = null;
       await queryRunner.manager.getRepository(Exams).save(exam);
       const examMember = queryRunner.manager.getRepository(ExamUsers).create();
       examMember.UserId = userId;
@@ -56,14 +59,18 @@ export class ExamsService {
   async findAll(userId: number) {
     return await this.examUsersRepository
       .createQueryBuilder('ExamUsers')
-      .select(['exams', 'ExamUsers.createdAt'])
+      .select(['exams', 'ExamUsers.created_at', 'paper'])
       .leftJoin('ExamUsers.Exam', 'exams')
+      .leftJoin('exams.ExamPaper', 'paper')
       .where('ExamUsers.UserId = :userId', { userId })
       .getMany();
   }
 
   async update(userId: number, examId: number, updateExamDto: UpdateExamDto) {
-    const exam = await this.examRepository.findOne({ id: +examId });
+    const exam = await this.examRepository.findOne({
+      where: { id: examId },
+      relations: ['ExamPaper'],
+    });
     if (!exam || exam.OwnerId !== userId) {
       throw new UnauthorizedException(NEED_AUTHENTIFICATION);
     }
@@ -81,5 +88,23 @@ export class ExamsService {
       throw new UnauthorizedException(NEED_AUTHENTIFICATION);
     }
     await this.examRepository.delete({ id: +examId });
+  }
+
+  async uploadPaper(userId: number, examId: number, file: Express.Multer.File) {
+    const exam = await this.examRepository.findOne({
+      where: { id: examId },
+      relations: ['ExamPaper'],
+    });
+    //examId가 존재 x or 시험이 내 주최가 아님
+    if (!exam || exam.OwnerId !== userId) {
+      throw new UnauthorizedException(NEED_AUTHENTIFICATION);
+    }
+    if (exam.ExamPaper) {
+      await this.fileService.deleteFile(exam.ExamPaper.key);
+    }
+    const uploadedFile = await this.fileService.uploadFile(file);
+    exam.ExamPaper = uploadedFile;
+    const savedExam = await this.examRepository.save(exam);
+    return savedExam;
   }
 }

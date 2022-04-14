@@ -3,10 +3,10 @@ import { UserRole } from './constants/user-role.enum';
 const userData = {
   email: 'happyjarban@gmail.com',
   name: '조찬민',
-  deletedAt: null,
+  deleted_at: null,
   id: 9,
-  createdAt: '2022-04-11T05:17:18.618Z',
-  updatedAt: '2022-04-11T05:17:18.618Z',
+  created_at: '2022-04-11T05:17:18.618Z',
+  updated_at: '2022-04-11T05:17:18.618Z',
   status: 1,
   RoleId: 1,
   Role: {

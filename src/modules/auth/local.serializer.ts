@@ -27,8 +27,8 @@ export class LocalSerializer extends PassportSerializer {
         'Role.type',
         'Users.id',
         'Users.email',
-        'Users.createdAt',
-        'Users.updatedAt',
+        'Users.created_at',
+        'Users.updated_at',
         'Users.name',
         'Users.status',
       ])

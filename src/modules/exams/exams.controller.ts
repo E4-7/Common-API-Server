@@ -8,15 +8,19 @@ import {
   Param,
   Patch,
   Post,
+  UploadedFile,
+  UseInterceptors,
 } from '@nestjs/common';
 import { ExamsService } from './exams.service';
 import { CreateExamDto } from './dto/create-exam.dto';
-import { UpdateColumn } from './dto/update-exam.dto';
+import { UpdateExamDto } from './dto/update-exam.dto';
 import { UserRole } from '../users/constants/user-role.enum';
 import { Roles } from '../../common/decorators/roles.decorator';
 import { User } from '../../common/decorators/user.decorator';
 import { Users } from '../users/entities/user.entity';
 import {
+  ApiBody,
+  ApiConsumes,
   ApiCookieAuth,
   ApiCreatedResponse,
   ApiNoContentResponse,
@@ -26,6 +30,9 @@ import {
 } from '@nestjs/swagger';
 import { Exams } from './entities/exam.entity';
 import { myExamDto } from './dto/my-exam.dto';
+import { FileInterceptor } from '@nestjs/platform-express';
+import { FileSize, Mimetype } from '../../common/constants/file-info.constant';
+import { ParsePdfPipe } from '../../common/pipes/parse-pdf.pipe';
 
 @ApiTags('EXAMS')
 @Controller('api/exams')
@@ -59,12 +66,6 @@ export class ExamsController {
     return await this.examService.findAll(user.id);
   }
 
-  /* @UseGuards(LocalAuthGuard)
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.examService.findOne(+id);
-  }*/
-
   @ApiCookieAuth('connect.sid')
   @ApiOperation({ summary: '시험 데이터 수정하기' })
   @ApiOkResponse({
@@ -77,7 +78,7 @@ export class ExamsController {
   async update(
     @User() user: Users,
     @Param('id') id: string,
-    @Body() updateExamDto: UpdateColumn,
+    @Body() updateExamDto: UpdateExamDto,
   ) {
     return await this.examService.update(user.id, +id, updateExamDto);
   }
@@ -92,5 +93,35 @@ export class ExamsController {
   @Delete(':id')
   async delete(@User() user: Users, @Param('id') id: string) {
     await this.examService.delete(user.id, +id);
+  }
+
+  @ApiCookieAuth('connect.sid')
+  @ApiOperation({ summary: '시험지 업로드' })
+  @ApiOkResponse({
+    description: '성공',
+    type: Exams,
+  })
+  @Roles(UserRole.PROFESSOR)
+  @UseInterceptors(FileInterceptor('file'))
+  @HttpCode(HttpStatus.OK)
+  @ApiConsumes(Mimetype.MULTITYPE_FORM_DATA)
+  @ApiBody({
+    schema: {
+      type: 'object',
+      properties: {
+        file: {
+          type: 'string',
+          format: 'binary',
+        },
+      },
+    },
+  })
+  @Post(':id/upload')
+  async uploadPaper(
+    @UploadedFile(new ParsePdfPipe(FileSize._10MB)) file: Express.Multer.File,
+    @User() user: Users,
+    @Param('id') examId: string,
+  ) {
+    return await this.examService.uploadPaper(user.id, +examId, file);
   }
 }
