@@ -5,6 +5,7 @@ import {
   Logger,
   LoggerService,
   UnauthorizedException,
+  UnprocessableEntityException,
 } from '@nestjs/common';
 import { CreateExamDto } from './dto/create-exam.dto';
 import { UpdateExamDto } from './dto/update-exam.dto';
@@ -13,10 +14,14 @@ import { Exams } from './entities/exam.entity';
 import { Connection, Repository } from 'typeorm';
 import { ExamUsers } from './entities/examusers.entity';
 import {
+  CANT_DELETE_MYSELF,
   NEED_AUTHENTIFICATION,
   UNKNOWN_ERR,
 } from '../../common/constants/error.constant';
 import { FilesService } from '../files/files.service';
+import { SignupDto } from '../users/dto/signup-user.dto';
+import { UsersService } from '../users/users.service';
+import { UserRole } from '../users/constants/user-role.enum';
 
 @Injectable()
 export class ExamsService {
@@ -26,6 +31,7 @@ export class ExamsService {
     @InjectRepository(ExamUsers)
     private examUsersRepository: Repository<ExamUsers>,
     private fileService: FilesService,
+    private userService: UsersService,
     private connection: Connection,
   ) {}
 
@@ -56,13 +62,23 @@ export class ExamsService {
     }
   }
 
-  async findAll(userId: number) {
+  async findMyExamAll(userId: number) {
     return await this.examUsersRepository
       .createQueryBuilder('ExamUsers')
       .select(['exams', 'ExamUsers.created_at', 'paper'])
       .leftJoin('ExamUsers.Exam', 'exams')
       .leftJoin('exams.ExamPaper', 'paper')
       .where('ExamUsers.UserId = :userId', { userId })
+      .getMany();
+  }
+
+  async findUserInExam(userId: number, examId: number) {
+    return await this.examUsersRepository
+      .createQueryBuilder('ExamUsers')
+      .select(['users', 'ExamUsers.created_at'])
+      .leftJoin('ExamUsers.User', 'users')
+      .where('ExamUsers.ExamId = :examId', { examId })
+      .andWhere('ExamUsers.Userid != :userId', { userId })
       .getMany();
   }
 
@@ -106,5 +122,51 @@ export class ExamsService {
     exam.ExamPaper = uploadedFile;
     const savedExam = await this.examRepository.save(exam);
     return savedExam;
+  }
+
+  async createAssistant(
+    createAssistantDto: SignupDto,
+    examId: number,
+    myUserId: number,
+  ) {
+    const exam = await this.examRepository.findOne({ id: examId });
+    if (exam.OwnerId !== myUserId) {
+      throw new UnauthorizedException(NEED_AUTHENTIFICATION);
+    }
+
+    //TODO: Transaction
+    const asssitantUser = await this.userService.join(
+      createAssistantDto.email,
+      createAssistantDto.name,
+      createAssistantDto.password,
+      UserRole.ASSISTANT,
+    );
+    await this.examUsersRepository.save({
+      ExamId: examId,
+      UserId: asssitantUser.id,
+    });
+    return asssitantUser;
+  }
+
+  async deleteAssistant(
+    myUserId: number,
+    examId: number,
+    assistantUserId: number,
+  ) {
+    if (myUserId === assistantUserId) {
+      throw new UnprocessableEntityException(CANT_DELETE_MYSELF);
+    }
+    const exam = await this.examRepository.findOne({ id: examId });
+    if (exam.OwnerId !== myUserId) {
+      throw new UnauthorizedException(NEED_AUTHENTIFICATION);
+    }
+    const userInExam = await this.examUsersRepository.findOne({
+      UserId: assistantUserId,
+      ExamId: examId,
+    });
+    if (!userInExam) {
+      throw new UnauthorizedException(NEED_AUTHENTIFICATION);
+    }
+    await this.userService.delete(assistantUserId);
   }
 }
