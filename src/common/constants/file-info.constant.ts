@@ -6,6 +6,7 @@ export enum Mimetype {
   GIF = 'image/gif',
   PDF = 'application/pdf',
   ZIP = 'application/zip',
+  MULTITYPE_FORM_DATA = 'multipart/form-data',
 }
 
 export enum FileSize {
