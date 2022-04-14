@@ -8,6 +8,8 @@ const NEED_ZIP_FILE_EXTENSION = 'ZIP 확장자에 맞는 파일만 첨부할 수
 const NEED_PDF_FILE_EXTENSION = 'PDF 확장자에 맞는 파일만 첨부할 수 있습니다.';
 const NEED_FILE_10MB_SIZE = '파일 사이즈는 10MB를 초과할 수 없습니다';
 const NOT_FOUND_FILE_KEY = '해당 키에 맞는 파일을 찾을 수 없습니다';
+
+const CANT_DELETE_MYSELF = '자기 자신을 삭제할 수 없습니다';
 export {
   NEED_LOGIN,
   NEED_AUTHENTIFICATION,
@@ -18,4 +20,5 @@ export {
   NEED_PDF_FILE_EXTENSION,
   NEED_FILE_10MB_SIZE,
   NOT_FOUND_FILE_KEY,
+  CANT_DELETE_MYSELF,
 };
