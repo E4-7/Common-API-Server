@@ -1,7 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { FilesService } from './files.service';
 import { getRepositoryToken } from '@nestjs/typeorm';
-import { Files } from './entities/file.entity';
+import { Files } from './entities/files.entity';
 import {
   MockRepository,
   mockRepository,

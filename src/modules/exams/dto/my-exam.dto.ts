@@ -1,4 +1,4 @@
-import { Exams } from '../entities/exam.entity';
+import { Exams } from '../entities/exams.entity';
 import { ApiProperty } from '@nestjs/swagger';
 
 export class myExamDto {

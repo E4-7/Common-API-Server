@@ -7,7 +7,7 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { S3 } from 'aws-sdk';
-import { Files } from './entities/file.entity';
+import { Files } from './entities/files.entity';
 import { Repository } from 'typeorm';
 import { ConfigService } from '@nestjs/config';
 import { InjectRepository } from '@nestjs/typeorm';

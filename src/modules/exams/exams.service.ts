@@ -9,9 +9,9 @@ import {
 import { CreateExamDto } from './dto/create-exam.dto';
 import { UpdateExamDto } from './dto/update-exam.dto';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Exams } from './entities/exam.entity';
+import { Exams } from './entities/exams.entity';
 import { Connection, Repository } from 'typeorm';
-import { ExamUsers } from './entities/examusers.entity';
+import { ExamUsers } from './entities/exams-users.entity';
 import {
   NEED_AUTHENTIFICATION,
   UNKNOWN_ERR,

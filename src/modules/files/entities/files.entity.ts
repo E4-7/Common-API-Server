@@ -2,7 +2,7 @@ import { Column, Entity, OneToOne } from 'typeorm';
 import { IsNotEmpty, IsNumber, IsString } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 import { CommonEntity } from '../../../common/abstract/common.entity';
-import { Exams } from '../../exams/entities/exam.entity';
+import { Exams } from '../../exams/entities/exams.entity';
 
 @Entity()
 export class Files extends CommonEntity {

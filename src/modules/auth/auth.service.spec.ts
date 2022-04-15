@@ -1,10 +1,10 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { AuthService } from './auth.service';
 import { getRepositoryToken } from '@nestjs/typeorm';
-import { Users } from '../users/entities/user.entity';
+import { Users } from '../users/entities/users.entity';
 import { ForbiddenException } from '@nestjs/common';
 import { NO_EXIST_USER, WRONG_USER_ACCOUNT } from '../users/constants/constant';
-import { Roles } from '../users/entities/role.entity';
+import { Roles } from '../users/entities/roles.entity';
 import {
   MockRepository,
   mockRepository,

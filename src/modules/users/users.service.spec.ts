@@ -1,8 +1,8 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { UsersService } from './users.service';
 import { getRepositoryToken } from '@nestjs/typeorm';
-import { Users } from './entities/user.entity';
-import { Roles } from './entities/role.entity';
+import { Users } from './entities/users.entity';
+import { Roles } from './entities/roles.entity';
 import {
   ForbiddenException,
   HttpStatus,

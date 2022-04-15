@@ -22,7 +22,7 @@ import { NotLoggedInGuard } from '../../common/guards/not-logged-in.guard';
 import { LoggedInGuard } from '../../common/guards/logged-in.guard';
 import { User } from '../../common/decorators/user.decorator';
 import { UsersService } from './users.service';
-import { Users } from './entities/user.entity';
+import { Users } from './entities/users.entity';
 import { NoPasswordUserDto } from './dto/no-password-user.dto';
 import { SignupUserDto } from './dto/signup-user.dto';
 import { LoginUserDto } from './dto/login-user.dto';

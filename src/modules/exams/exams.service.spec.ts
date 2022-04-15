@@ -1,8 +1,8 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { ExamsService } from './exams.service';
 import { getRepositoryToken } from '@nestjs/typeorm';
-import { Exams } from './entities/exam.entity';
-import { ExamUsers } from './entities/examusers.entity';
+import { Exams } from './entities/exams.entity';
+import { ExamUsers } from './entities/exams-users.entity';
 import {
   mockConnection,
   mockRepository,
@@ -16,7 +16,7 @@ import {
   MocknewExamDataColumn,
   MockoneExamData,
 } from './exams.service.mock';
-import { Files } from '../files/entities/file.entity';
+import { Files } from '../files/entities/files.entity';
 import { FilesService } from '../files/files.service';
 import { mockFileService } from '../files/files.mock';
 

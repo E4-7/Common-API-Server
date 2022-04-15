@@ -1,5 +1,5 @@
 import { PartialType } from '@nestjs/mapped-types';
-import { Exams } from '../entities/exam.entity';
+import { Exams } from '../entities/exams.entity';
 import { PickType } from '@nestjs/swagger';
 
 export class UpdateColumn extends PickType(Exams, [

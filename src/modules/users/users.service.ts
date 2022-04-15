@@ -6,9 +6,9 @@ import {
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import bcrypt from 'bcrypt';
-import { Users } from './entities/user.entity';
+import { Users } from './entities/users.entity';
 import { UserRole } from './constants/user-role.enum';
-import { Roles } from './entities/role.entity';
+import { Roles } from './entities/roles.entity';
 import { ALREADY_EXIST_USER } from './constants/constant';
 
 @Injectable()

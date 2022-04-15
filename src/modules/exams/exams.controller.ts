@@ -17,7 +17,7 @@ import { UpdateExamDto } from './dto/update-exam.dto';
 import { UserRole } from '../users/constants/user-role.enum';
 import { Roles } from '../../common/decorators/roles.decorator';
 import { User } from '../../common/decorators/user.decorator';
-import { Users } from '../users/entities/user.entity';
+import { Users } from '../users/entities/users.entity';
 import {
   ApiBody,
   ApiConsumes,
@@ -28,7 +28,7 @@ import {
   ApiOperation,
   ApiTags,
 } from '@nestjs/swagger';
-import { Exams } from './entities/exam.entity';
+import { Exams } from './entities/exams.entity';
 import { myExamDto } from './dto/my-exam.dto';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { FileSize, Mimetype } from '../../common/constants/file-info.constant';

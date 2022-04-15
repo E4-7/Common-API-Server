@@ -19,9 +19,9 @@ import {
 } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 import { ExamStatus } from '../contants/exam-status.enum';
-import { Users } from '../../users/entities/user.entity';
-import { ExamUsers } from './examusers.entity';
-import { Files } from '../../files/entities/file.entity';
+import { Users } from '../../users/entities/users.entity';
+import { ExamUsers } from './exams-users.entity';
+import { Files } from '../../files/entities/files.entity';
 import { ApiModelProperty } from '@nestjs/swagger/dist/decorators/api-model-property.decorator';
 
 @Index('OwnerId', ['OwnerId'])

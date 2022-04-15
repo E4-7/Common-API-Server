@@ -2,7 +2,7 @@ import { ForbiddenException, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import bcrypt from 'bcrypt';
 import { Repository } from 'typeorm';
-import { Users } from '../users/entities/user.entity';
+import { Users } from '../users/entities/users.entity';
 import { NO_EXIST_USER, WRONG_USER_ACCOUNT } from '../users/constants/constant';
 
 @Injectable()

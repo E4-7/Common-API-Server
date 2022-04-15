@@ -2,7 +2,7 @@ import { Logger, Module } from '@nestjs/common';
 import { FilesService } from './files.service';
 import { S3 } from 'aws-sdk';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { Files } from './entities/file.entity';
+import { Files } from './entities/files.entity';
 import { ConfigService } from '@nestjs/config';
 
 @Module({
