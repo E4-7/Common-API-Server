@@ -7,20 +7,18 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { S3 } from 'aws-sdk';
-import { Files } from './entities/files.entity';
-import { Repository } from 'typeorm';
 import { ConfigService } from '@nestjs/config';
-import { InjectRepository } from '@nestjs/typeorm';
 import {
   NOT_FOUND_FILE_KEY,
   UNKNOWN_ERR,
 } from '../../common/constants/error.constant';
+import { FilesRepository } from './repositories/files.repository';
 
 @Injectable()
 export class FilesService {
   constructor(
     @Inject(Logger) private readonly logger: LoggerService,
-    @InjectRepository(Files) private readonly fileRepository: Repository<Files>,
+    private readonly filesRepository: FilesRepository,
     private readonly s3: S3,
     private readonly configService: ConfigService,
   ) {}
@@ -36,7 +34,7 @@ export class FilesService {
           ContentType: fileInBody.mimetype,
         })
         .promise();
-      const uploadToDBResult = await this.fileRepository.save({
+      const uploadToDBResult = await this.filesRepository.save({
         key: uploadToS3Result.Key,
         size,
         mimetype,
@@ -51,7 +49,7 @@ export class FilesService {
   }
 
   async deleteFile(key: string) {
-    const file = await this.fileRepository.findOne({ key });
+    const file = await this.filesRepository.findOne({ key });
     if (!file) {
       throw new NotFoundException(NOT_FOUND_FILE_KEY);
     }
@@ -62,7 +60,7 @@ export class FilesService {
           Key: key,
         })
         .promise();
-      await this.fileRepository.delete({ key });
+      await this.filesRepository.delete({ key });
     } catch (error) {
       this.logger.error(error);
       throw new InternalServerErrorException(UNKNOWN_ERR);

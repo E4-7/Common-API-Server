@@ -8,23 +8,23 @@ import {
 } from '@nestjs/common';
 import { CreateExamDto } from './dto/create-exam.dto';
 import { UpdateExamDto } from './dto/update-exam.dto';
-import { InjectRepository } from '@nestjs/typeorm';
 import { Exams } from './entities/exams.entity';
-import { Connection, Repository } from 'typeorm';
+import { Connection } from 'typeorm';
 import { ExamUsers } from './entities/exams-users.entity';
 import {
   NEED_AUTHENTIFICATION,
   UNKNOWN_ERR,
 } from '../../common/constants/error.constant';
 import { FilesService } from '../files/files.service';
+import { ExamsRepository } from './repositories/exams.repository';
+import { ExamsUsersRepository } from './repositories/exams-users.repository';
 
 @Injectable()
 export class ExamsService {
   constructor(
     @Inject(Logger) private readonly logger: LoggerService,
-    @InjectRepository(Exams) private examRepository: Repository<Exams>,
-    @InjectRepository(ExamUsers)
-    private examUsersRepository: Repository<ExamUsers>,
+    private readonly examsRepository: ExamsRepository,
+    private readonly examsUsersRepository: ExamsUsersRepository,
     private fileService: FilesService,
     private connection: Connection,
   ) {}
@@ -57,7 +57,7 @@ export class ExamsService {
   }
 
   async findAll(userId: number) {
-    return await this.examUsersRepository
+    return await this.examsUsersRepository
       .createQueryBuilder('ExamUsers')
       .select(['exams', 'ExamUsers.created_at', 'paper'])
       .leftJoin('ExamUsers.Exam', 'exams')
@@ -67,7 +67,7 @@ export class ExamsService {
   }
 
   async update(userId: number, examId: number, updateExamDto: UpdateExamDto) {
-    const exam = await this.examRepository.findOne({
+    const exam = await this.examsRepository.findOne({
       where: { id: examId },
       relations: ['ExamPaper'],
     });
@@ -77,21 +77,21 @@ export class ExamsService {
     for (const key in updateExamDto) {
       exam[key] = updateExamDto[key];
     }
-    await this.examRepository.save(exam);
+    await this.examsRepository.save(exam);
     return exam;
   }
 
   async delete(userId: number, examId: number) {
     //사용자 인증 본인의 시험만 삭제 가능
-    const exam = await this.examRepository.findOne({ id: +examId });
+    const exam = await this.examsRepository.findOne({ id: +examId });
     if (!exam || exam.OwnerId !== userId) {
       throw new UnauthorizedException(NEED_AUTHENTIFICATION);
     }
-    await this.examRepository.delete({ id: +examId });
+    await this.examsRepository.delete({ id: +examId });
   }
 
   async uploadPaper(userId: number, examId: number, file: Express.Multer.File) {
-    const exam = await this.examRepository.findOne({
+    const exam = await this.examsRepository.findOne({
       where: { id: examId },
       relations: ['ExamPaper'],
     });
@@ -104,7 +104,7 @@ export class ExamsService {
     }
     const uploadedFile = await this.fileService.uploadFile(file);
     exam.ExamPaper = uploadedFile;
-    const savedExam = await this.examRepository.save(exam);
+    const savedExam = await this.examsRepository.save(exam);
     return savedExam;
   }
 }

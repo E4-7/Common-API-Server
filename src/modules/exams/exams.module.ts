@@ -2,12 +2,15 @@ import { Logger, Module } from '@nestjs/common';
 import { ExamsService } from './exams.service';
 import { ExamsController } from './exams.controller';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { Exams } from './entities/exams.entity';
-import { ExamUsers } from './entities/exams-users.entity';
 import { FilesModule } from '../files/files.module';
+import { ExamsRepository } from './repositories/exams.repository';
+import { ExamsUsersRepository } from './repositories/exams-users.repository';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Exams, ExamUsers]), FilesModule],
+  imports: [
+    TypeOrmModule.forFeature([ExamsRepository, ExamsUsersRepository]),
+    FilesModule,
+  ],
   controllers: [ExamsController],
   providers: [ExamsService, Logger],
 })
