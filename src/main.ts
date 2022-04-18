@@ -14,10 +14,16 @@ import {
 } from 'nest-winston';
 import winston from 'winston';
 import { ConfigService } from '@nestjs/config';
+import {
+  initializeTransactionalContext,
+  patchTypeORMRepositoryWithBaseRepository,
+} from 'typeorm-transactional-cls-hooked';
 
 declare const module: any;
 
 async function bootstrap() {
+  initializeTransactionalContext(); // Initialize cls-hooked
+  patchTypeORMRepositoryWithBaseRepository(); // patch Repository with BaseRepository.
   const app = await NestFactory.create<NestExpressApplication>(AppModule, {
     logger: WinstonModule.createLogger({
       transports: [
