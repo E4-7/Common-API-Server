@@ -3,6 +3,7 @@ import { IsNotEmpty, IsNumber, IsString } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 import { CommonEntity } from '../../../common/abstract/common.entity';
 import { Exams } from '../../exams/entities/exams.entity';
+import { Students } from '../../exams/students/entities/student.entity';
 
 @Entity()
 export class Files extends CommonEntity {
@@ -54,4 +55,11 @@ export class Files extends CommonEntity {
   //시험지 -> 시험
   @OneToOne(() => Exams, (exams) => exams.ExamPaper)
   Exam: Exams;
+
+  //답안지 -> 학생
+  @OneToOne(() => Students, (students) => students.ExamAnswer)
+  Student: Students;
+  //인증사진 -> 학생
+  @OneToOne(() => Students, (students) => students.CertificatedImage)
+  StudentImage: Students;
 }
