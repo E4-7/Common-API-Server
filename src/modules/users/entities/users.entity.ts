@@ -11,7 +11,7 @@ import {
 } from 'typeorm';
 import { CommonEntity } from '../../../common/abstract/common.entity';
 import { UserStatus } from '../constants/user-status.enum';
-import { Roles } from './role.entity';
+import { Roles } from './roles.entity';
 import {
   IsEmail,
   IsEnum,
@@ -20,8 +20,8 @@ import {
   IsString,
 } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
-import { Exams } from '../../exams/entities/exam.entity';
-import { ExamUsers } from '../../exams/entities/examusers.entity';
+import { Exams } from '../../exams/entities/exams.entity';
+import { ExamUsers } from '../../exams/entities/exams-users.entity';
 
 @Index('email', ['email'], { unique: true })
 @Entity()

@@ -1,6 +1,6 @@
 import { Connection } from 'typeorm';
 import { Factory, Seeder } from 'typeorm-seeding';
-import { Roles } from '../../../modules/users/entities/role.entity';
+import { Roles } from '../../../modules/users/entities/roles.entity';
 import { UserRole } from '../../../modules/users/constants/user-role.enum';
 
 export class CreateInitialData implements Seeder {

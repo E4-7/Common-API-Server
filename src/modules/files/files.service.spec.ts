@@ -1,7 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { FilesService } from './files.service';
 import { getRepositoryToken } from '@nestjs/typeorm';
-import { Files } from './entities/file.entity';
 import {
   MockRepository,
   mockRepository,
@@ -19,10 +18,11 @@ import {
   NOT_FOUND_FILE_KEY,
   UNKNOWN_ERR,
 } from '../../common/constants/error.constant';
+import { FilesRepository } from './repositories/files.repository';
 
 describe('FilesService', () => {
   let fileService: FilesService;
-  let fileRepository: MockRepository<Files>;
+  let fileRepository: MockRepository<FilesRepository>;
   let s3Service;
   let configService: ConfigService;
 
@@ -32,7 +32,7 @@ describe('FilesService', () => {
         FilesService,
         Logger,
         {
-          provide: getRepositoryToken(Files),
+          provide: getRepositoryToken(FilesRepository),
           useValue: mockRepository(),
         },
         ConfigService,
@@ -42,8 +42,8 @@ describe('FilesService', () => {
         },
       ],
     }).compile();
-    fileRepository = module.get<MockRepository<Files>>(
-      getRepositoryToken(Files),
+    fileRepository = module.get<MockRepository<FilesRepository>>(
+      getRepositoryToken(FilesRepository),
     );
     fileService = module.get<FilesService>(FilesService);
     s3Service = module.get<S3>(S3);

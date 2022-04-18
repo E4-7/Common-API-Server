@@ -3,19 +3,17 @@ import {
   Injectable,
   UnprocessableEntityException,
 } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
 import bcrypt from 'bcrypt';
-import { Users } from './entities/user.entity';
 import { UserRole } from './constants/user-role.enum';
-import { Roles } from './entities/role.entity';
 import { ALREADY_EXIST_USER } from './constants/constant';
+import { UsersRepository } from './repositories/users.repository';
+import { RolesRepository } from './repositories/roles.repository';
 
 @Injectable()
 export class UsersService {
   constructor(
-    @InjectRepository(Users) private usersRepository: Repository<Users>,
-    @InjectRepository(Roles) private roleRepository: Repository<Roles>,
+    private readonly usersRepository: UsersRepository,
+    private readonly rolesRepository: RolesRepository,
   ) {}
 
   async findByEmail(email: string) {
@@ -35,7 +33,7 @@ export class UsersService {
     if (existingUser) {
       throw new ForbiddenException(ALREADY_EXIST_USER);
     }
-    const roleData = await this.roleRepository.findOne({
+    const roleData = await this.rolesRepository.findOne({
       where: { type },
     });
     if (!roleData) {
@@ -54,5 +52,9 @@ export class UsersService {
     delete user.RoleId;
 
     return user;
+  }
+
+  async delete(userId: number) {
+    await this.usersRepository.softDelete({ id: userId });
   }
 }

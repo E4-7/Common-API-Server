@@ -16,23 +16,7 @@ const mockRepository = () => ({
   create: jest.fn(),
   save: jest.fn(),
   delete: jest.fn(),
+  softDelete: jest.fn(),
 });
 
-const mockConnection = () => ({
-  createQueryRunner: jest.fn().mockReturnValue({
-    manager: {
-      save: jest.fn().mockReturnValue({}),
-      update: jest.fn(),
-      delete: jest.fn(),
-      create: jest.fn().mockReturnValue({}),
-      getRepository: jest.fn().mockReturnThis(),
-    },
-    connect: jest.fn(),
-    release: jest.fn(),
-    startTransaction: jest.fn(),
-    commitTransaction: jest.fn(),
-    rollbackTransaction: jest.fn(),
-  }),
-});
-
-export { MockRepository, mockRepository, mockConnection };
+export { MockRepository, mockRepository };

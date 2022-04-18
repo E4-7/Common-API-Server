@@ -1,15 +1,11 @@
 import { ForbiddenException, Injectable } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
 import bcrypt from 'bcrypt';
-import { Repository } from 'typeorm';
-import { Users } from '../users/entities/user.entity';
 import { NO_EXIST_USER, WRONG_USER_ACCOUNT } from '../users/constants/constant';
+import { UsersRepository } from '../users/repositories/users.repository';
 
 @Injectable()
 export class AuthService {
-  constructor(
-    @InjectRepository(Users) private usersRepository: Repository<Users>,
-  ) {}
+  constructor(private readonly usersRepository: UsersRepository) {}
 
   async validateUser(email: string, password: string) {
     const user = await this.usersRepository

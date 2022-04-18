@@ -1,8 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { UsersService } from './users.service';
 import { getRepositoryToken } from '@nestjs/typeorm';
-import { Users } from './entities/user.entity';
-import { Roles } from './entities/role.entity';
 import {
   ForbiddenException,
   HttpStatus,
@@ -15,31 +13,33 @@ import {
   mockRepository,
 } from '../../common/constants/repository-mock.constant';
 import { userData, userDataAssistant } from './user.service.mock';
+import { UsersRepository } from './repositories/users.repository';
+import { RolesRepository } from './repositories/roles.repository';
 
 describe('UsersService', () => {
   let service: UsersService;
-  let userRepository: MockRepository<Users>;
-  let roleRepository: MockRepository<Roles>;
+  let userRepository: MockRepository<UsersRepository>;
+  let roleRepository: MockRepository<RolesRepository>;
   let module: TestingModule;
   beforeEach(async () => {
     module = await Test.createTestingModule({
       providers: [
         UsersService,
         {
-          provide: getRepositoryToken(Users),
+          provide: getRepositoryToken(UsersRepository),
           useValue: mockRepository(),
         },
         {
-          provide: getRepositoryToken(Roles),
+          provide: getRepositoryToken(RolesRepository),
           useValue: mockRepository(),
         },
       ],
     }).compile();
-    userRepository = module.get<MockRepository<Users>>(
-      getRepositoryToken(Users),
+    userRepository = module.get<MockRepository<UsersRepository>>(
+      getRepositoryToken(UsersRepository),
     );
-    roleRepository = module.get<MockRepository<Roles>>(
-      getRepositoryToken(Roles),
+    roleRepository = module.get<MockRepository<RolesRepository>>(
+      getRepositoryToken(RolesRepository),
     );
     service = module.get<UsersService>(UsersService);
   });
@@ -105,6 +105,12 @@ describe('UsersService', () => {
       );
       expect(userRepository.save).toHaveBeenCalledTimes(1);
       expect(data.Role.type).toBe(UserRole.ASSISTANT);
+    });
+  });
+  describe('delete', () => {
+    it('정상적으로 잘 삭제됐을 경우(soft-delete)', async () => {
+      await service.delete(0);
+      expect(userRepository.softDelete).toHaveBeenCalledTimes(1);
     });
   });
 });

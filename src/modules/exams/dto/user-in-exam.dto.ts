@@ -1,7 +1,7 @@
-import { Exams } from '../entities/exams.entity';
 import { ApiProperty } from '@nestjs/swagger';
+import { Users } from '../../users/entities/users.entity';
 
-export class MyExamDto {
+export class UserInExamDto {
   @ApiProperty({
     example:
       '2021-07-17T14:30:00+09:00[시험 만든(참가) 날짜 or 조교 가입 날짜(권한에 따라 달라짐)]',
@@ -9,6 +9,6 @@ export class MyExamDto {
   })
   created_at: Date;
 
-  @ApiProperty({ type: () => Exams })
-  Exam: Exams;
+  @ApiProperty({ type: () => Users })
+  User: Users;
 }

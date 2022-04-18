@@ -1,15 +1,15 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { AuthService } from './auth.service';
 import { getRepositoryToken } from '@nestjs/typeorm';
-import { Users } from '../users/entities/user.entity';
 import { ForbiddenException } from '@nestjs/common';
 import { NO_EXIST_USER, WRONG_USER_ACCOUNT } from '../users/constants/constant';
-import { Roles } from '../users/entities/role.entity';
 import {
   MockRepository,
   mockRepository,
 } from '../../common/constants/repository-mock.constant';
 import bcrypt from 'bcrypt';
+import { UsersRepository } from '../users/repositories/users.repository';
+import { RolesRepository } from '../users/repositories/roles.repository';
 
 const userData = {
   email: 'happyjarban10@gmail.com',
@@ -28,23 +28,23 @@ const userData = {
 describe('AuthService', () => {
   let module: TestingModule;
   let service: AuthService;
-  let userRepository: MockRepository<Users>;
+  let userRepository: MockRepository<UsersRepository>;
   beforeEach(async () => {
     module = await Test.createTestingModule({
       providers: [
         AuthService,
         {
-          provide: getRepositoryToken(Users),
+          provide: getRepositoryToken(UsersRepository),
           useValue: mockRepository(),
         },
         {
-          provide: getRepositoryToken(Roles),
+          provide: getRepositoryToken(RolesRepository),
           useValue: mockRepository(),
         },
       ],
     }).compile();
-    userRepository = module.get<MockRepository<Users>>(
-      getRepositoryToken(Users),
+    userRepository = module.get<MockRepository<UsersRepository>>(
+      getRepositoryToken(UsersRepository),
     );
     service = module.get<AuthService>(AuthService);
   });

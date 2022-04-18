@@ -1,38 +1,51 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { ExamsService } from './exams.service';
-import { getRepositoryToken } from '@nestjs/typeorm';
-import { Exams } from './entities/exam.entity';
-import { ExamUsers } from './entities/examusers.entity';
 import {
-  mockConnection,
   mockRepository,
   MockRepository,
 } from '../../common/constants/repository-mock.constant';
-import { Logger, UnauthorizedException } from '@nestjs/common';
-import { Connection } from 'typeorm';
-import { NEED_AUTHENTIFICATION } from '../../common/constants/error.constant';
+import {
+  Logger,
+  UnauthorizedException,
+  UnprocessableEntityException,
+} from '@nestjs/common';
+import {
+  CANT_DELETE_MYSELF,
+  NEED_AUTHENTIFICATION,
+} from '../../common/constants/error.constant';
 import {
   MockexamUserDataArray,
   MocknewExamDataColumn,
   MockoneExamData,
 } from './exams.service.mock';
-import { Files } from '../files/entities/file.entity';
 import { FilesService } from '../files/files.service';
 import { mockFileService } from '../files/files.mock';
+import { ExamsRepository } from './repositories/exams.repository';
+import { ExamsUsersRepository } from './repositories/exams-users.repository';
+import { FilesRepository } from '../files/repositories/files.repository';
+import { UsersService } from '../users/users.service';
+import { ExamUsers } from './entities/exams-users.entity';
+import { mockUserService, signupData } from '../users/user.service.mock';
 
 const myUserID = 1,
   myExamID = 1;
 
+jest.mock('typeorm-transactional-cls-hooked', () => ({
+  Transactional: () => () => ({}),
+  BaseRepository: class {},
+}));
+
 describe('ExamService', () => {
   let service: ExamsService;
   let fileService: FilesService;
-  let examRepository: MockRepository<Exams>;
-  let examUsersRepository: MockRepository<ExamUsers>;
-  let connection;
+  let userService: UsersService;
+  let examRepository: MockRepository;
+  let examUsersRepository: MockRepository;
   //initial datas
   let newExamDataColumn;
   let examUserDataArray;
   let oneExamData;
+
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       imports: [
@@ -41,37 +54,36 @@ describe('ExamService', () => {
           providers: [{ provide: FilesService, useValue: mockFileService }],
           exports: [FilesService],
         },
+        {
+          module: class FakeModule {},
+          providers: [{ provide: UsersService, useValue: mockUserService }],
+          exports: [UsersService],
+        },
       ],
       providers: [
         ExamsService,
         {
-          provide: getRepositoryToken(Exams),
+          provide: ExamsRepository,
           useValue: mockRepository(),
         },
         {
-          provide: getRepositoryToken(ExamUsers),
+          provide: ExamsUsersRepository,
           useValue: mockRepository(),
         },
         {
-          provide: getRepositoryToken(Files),
+          provide: FilesRepository,
           useValue: mockRepository(),
         },
+
         Logger,
-        {
-          provide: Connection,
-          useValue: mockConnection(),
-        },
       ],
     }).compile();
-    connection = module.get(Connection);
+
     service = module.get<ExamsService>(ExamsService);
     fileService = module.get(FilesService);
-    examRepository = module.get<MockRepository<Exams>>(
-      getRepositoryToken(Exams),
-    );
-    examUsersRepository = module.get<MockRepository<ExamUsers>>(
-      getRepositoryToken(ExamUsers),
-    );
+    userService = module.get(UsersService);
+    examRepository = module.get(ExamsRepository);
+    examUsersRepository = module.get(ExamsUsersRepository);
     examUserDataArray = Object.assign({}, MockexamUserDataArray);
     oneExamData = Object.assign({}, MockoneExamData);
     newExamDataColumn = Object.assign({}, MocknewExamDataColumn);
@@ -81,11 +93,11 @@ describe('ExamService', () => {
     expect(service).toBeDefined();
   });
 
-  describe('findAll', () => {
+  describe('findMyExamAll', () => {
     it('쿼리빌더 테스트', async () => {
       //given
       //when
-      await service.findAll(0);
+      await service.findMyExamAll(0);
       //then
       expect(examUsersRepository.createQueryBuilder).toHaveBeenCalledTimes(1);
       expect(
@@ -98,7 +110,7 @@ describe('ExamService', () => {
         .spyOn(examUsersRepository.createQueryBuilder(), 'getMany')
         .mockResolvedValue(examUserDataArray);
       //when
-      const result = await service.findAll(0);
+      const result = await service.findMyExamAll(0);
       //then
       expect(
         examUsersRepository.createQueryBuilder().getMany,
@@ -108,31 +120,15 @@ describe('ExamService', () => {
   });
 
   describe('create', () => {
-    let qr;
-    beforeEach(async () => {
-      qr = connection.createQueryRunner();
-    });
-    it('Transaction 실패 테스트', async () => {
-      const temp = qr.manager.create;
-      qr.manager.create = new Error('occur Error');
-      try {
-        await service.create(newExamDataColumn, 0);
-      } catch (e) {}
-      expect(qr.rollbackTransaction).toHaveBeenCalled();
-      expect(qr.release).toHaveBeenCalled();
-      qr.manager.create = temp;
-      //expect(service.create());
-    });
     it('성공케이스', async () => {
-      qr.manager.create = jest.fn().mockReturnValue(oneExamData);
-      const data = await service.create(newExamDataColumn, 0);
-      expect(qr.connect).toHaveBeenCalled();
-      expect(qr.startTransaction).toHaveBeenCalled();
-      expect(qr.manager.save).toHaveBeenCalledTimes(2);
-      expect(qr.manager.create).toHaveBeenCalledTimes(2);
-      expect(qr.commitTransaction).toHaveBeenCalled();
-      expect(qr.release).toHaveBeenCalled();
-      expect(data).toEqual(oneExamData);
+      examRepository.create.mockReturnValue(oneExamData);
+      examUsersRepository.create.mockReturnValue(new ExamUsers());
+      const result = await service.create(newExamDataColumn, 1);
+      expect(examRepository.create).toHaveBeenCalledTimes(1);
+      expect(examRepository.save).toHaveBeenCalledTimes(1);
+      expect(examUsersRepository.create).toHaveBeenCalledTimes(1);
+      expect(examUsersRepository.create).toHaveBeenCalledTimes(1);
+      expect(result).toStrictEqual(oneExamData);
     });
   });
 
@@ -251,6 +247,66 @@ describe('ExamService', () => {
       expect(fileService.deleteFile).toHaveBeenCalledTimes(1);
       expect(fileService.uploadFile).toHaveBeenCalledWith(newExamDataColumn);
       expect(examRepository.save).toHaveBeenCalledTimes(1);
+    });
+  });
+
+  describe('createAssistant', () => {
+    it('내가 해당 시험의 교수가 아닌 경우', async () => {
+      try {
+        examRepository.findOne.mockResolvedValue(oneExamData);
+        //when
+        await service.createAssistant(signupData, 2, 2);
+      } catch (e) {
+        //then
+        expect(e.message).toBe(NEED_AUTHENTIFICATION);
+        expect(e).toBeInstanceOf(UnauthorizedException);
+      }
+    });
+    // userService의 규칙과 동일하므로 테스트 x
+  });
+
+  describe('deleteAssistant', () => {
+    it('자기 자신을 삭제 했을 경우', async () => {
+      try {
+        examRepository.findOne.mockResolvedValue(oneExamData);
+        //when
+        await service.deleteAssistant(1, 1, 1);
+      } catch (e) {
+        //then
+        expect(e).toBeInstanceOf(UnprocessableEntityException);
+        expect(e.message).toBe(CANT_DELETE_MYSELF);
+      }
+    });
+    it('내가 해당 시험의 교수가 아닌 경우 ', async () => {
+      try {
+        examRepository.findOne.mockResolvedValue(oneExamData);
+        //when
+        await service.deleteAssistant(2, myExamID, newExamDataColumn);
+      } catch (e) {
+        //then
+        expect(e).toBeInstanceOf(UnauthorizedException);
+        expect(e.message).toBe(NEED_AUTHENTIFICATION);
+      }
+    });
+
+    it('해당 시험에 해당하는 학생이 없을 경우 ', async () => {
+      try {
+        examRepository.findOne.mockResolvedValue(oneExamData);
+        examUsersRepository.findOne.mockReturnValue(null);
+        //when
+        await service.deleteAssistant(1, myExamID, newExamDataColumn);
+      } catch (e) {
+        //then
+        expect(e).toBeInstanceOf(UnauthorizedException);
+        expect(e.message).toBe(NEED_AUTHENTIFICATION);
+      }
+    });
+    it('정상 작동', async () => {
+      examRepository.findOne.mockResolvedValue(oneExamData);
+      examUsersRepository.findOne.mockReturnValue({});
+      //when
+      await service.deleteAssistant(1, myExamID, newExamDataColumn);
+      expect(userService.delete).toHaveBeenCalledTimes(1);
     });
   });
 });

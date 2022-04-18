@@ -2,11 +2,11 @@ import { Logger, Module } from '@nestjs/common';
 import { FilesService } from './files.service';
 import { S3 } from 'aws-sdk';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { Files } from './entities/file.entity';
 import { ConfigService } from '@nestjs/config';
+import { FilesRepository } from './repositories/files.repository';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Files])],
+  imports: [TypeOrmModule.forFeature([FilesRepository])],
   providers: [
     FilesService,
     ConfigService,

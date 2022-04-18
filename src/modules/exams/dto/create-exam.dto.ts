@@ -1,5 +1,5 @@
 import { PickType } from '@nestjs/swagger';
-import { Exams } from '../entities/exam.entity';
+import { Exams } from '../entities/exams.entity';
 
 export class CreateExamDto extends PickType(Exams, [
   'name',

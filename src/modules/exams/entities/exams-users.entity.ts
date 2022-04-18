@@ -7,10 +7,11 @@ import {
   ManyToOne,
   UpdateDateColumn,
 } from 'typeorm';
-import { Exams } from './exam.entity';
-import { Users } from '../../users/entities/user.entity';
+import { Exams } from './exams.entity';
+import { Users } from '../../users/entities/users.entity';
 
 @Index('UserId', ['UserId'], {})
+@Index('ExamId', ['ExamId'], {})
 @Entity('examusers')
 export class ExamUsers {
   @CreateDateColumn()
