@@ -24,7 +24,7 @@ import { User } from '../../common/decorators/user.decorator';
 import { UsersService } from './users.service';
 import { Users } from './entities/users.entity';
 import { NoPasswordUserDto } from './dto/no-password-user.dto';
-import { SignupUserDto } from './dto/signup-user.dto';
+import { SignupDto } from './dto/signup-user.dto';
 import { LoginUserDto } from './dto/login-user.dto';
 
 @ApiTags('USERS')
@@ -59,7 +59,7 @@ export class UsersController {
   @ApiCreatedResponse({ description: '회원가입', type: NoPasswordUserDto })
   @HttpCode(HttpStatus.CREATED)
   @Post()
-  async join(@Body() data: SignupUserDto) {
+  async join(@Body() data: SignupDto) {
     const user = this.usersService.findByEmail(data.email);
     if (!user) {
       throw new NotFoundException();

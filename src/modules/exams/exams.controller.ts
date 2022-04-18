@@ -28,16 +28,37 @@ import {
   ApiOperation,
   ApiTags,
 } from '@nestjs/swagger';
-import { Exams } from './entities/exams.entity';
-import { myExamDto } from './dto/my-exam.dto';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { FileSize, Mimetype } from '../../common/constants/file-info.constant';
 import { ParsePdfPipe } from '../../common/pipes/parse-pdf.pipe';
+import { UsersService } from '../users/users.service';
+import { SignupDto } from '../users/dto/signup-user.dto';
+import { NoPasswordUserDto } from '../users/dto/no-password-user.dto';
+import { UserInExamDto } from './dto/user-in-exam.dto';
+import { MyExamDto } from './dto/my-exam.dto';
+import { Exams } from './entities/exams.entity';
 
 @ApiTags('EXAMS')
 @Controller('api/exams')
 export class ExamsController {
-  constructor(private readonly examService: ExamsService) {}
+  constructor(
+    private readonly examService: ExamsService,
+    private readonly userService: UsersService,
+  ) {}
+
+  @ApiCookieAuth('connect.sid')
+  @ApiOperation({ summary: '내가 만든 시험 데이터 가져오기' })
+  @ApiOkResponse({
+    description: '성공',
+    type: MyExamDto,
+    isArray: true,
+  })
+  @Roles(UserRole.PROFESSOR, UserRole.ASSISTANT)
+  @HttpCode(HttpStatus.OK)
+  @Get()
+  async findMyExamAll(@User() user: Users) {
+    return await this.examService.findMyExamAll(user.id);
+  }
 
   @ApiCookieAuth('connect.sid')
   @ApiOperation({ summary: '시험 만들기' })
@@ -53,17 +74,17 @@ export class ExamsController {
   }
 
   @ApiCookieAuth('connect.sid')
-  @ApiOperation({ summary: '내가 만든 시험 데이터 가져오기' })
+  @ApiOperation({ summary: '시험에 속한 조교 조회하기' })
   @ApiOkResponse({
     description: '성공',
-    type: myExamDto,
+    type: UserInExamDto,
     isArray: true,
   })
   @Roles(UserRole.PROFESSOR, UserRole.ASSISTANT)
   @HttpCode(HttpStatus.OK)
-  @Get()
-  async findAll(@User() user: Users) {
-    return await this.examService.findAll(user.id);
+  @Get(':id')
+  async findUserInExam(@User() user: Users, @Param('id') examId: string) {
+    return await this.examService.findUserInExam(user.id, +examId);
   }
 
   @ApiCookieAuth('connect.sid')
@@ -123,5 +144,42 @@ export class ExamsController {
     @Param('id') examId: string,
   ) {
     return await this.examService.uploadPaper(user.id, +examId, file);
+  }
+
+  @ApiCookieAuth('connect.sid')
+  @ApiOperation({ summary: '조교 추가하기' })
+  @ApiCreatedResponse({
+    description: '성공',
+    type: NoPasswordUserDto,
+  })
+  @HttpCode(HttpStatus.CREATED)
+  @Roles(UserRole.PROFESSOR)
+  @Post(':examId/assistant')
+  async createAssistant(
+    @User() user: Users,
+    @Body() createAssistantDto: SignupDto,
+    @Param('examId') examId: string,
+  ) {
+    return await this.examService.createAssistant(
+      createAssistantDto,
+      +examId,
+      +user.id,
+    );
+  }
+
+  @ApiCookieAuth('connect.sid')
+  @ApiOperation({ summary: '조교 삭제' })
+  @ApiNoContentResponse({
+    description: '성공',
+  })
+  @HttpCode(HttpStatus.NO_CONTENT)
+  @Roles(UserRole.PROFESSOR)
+  @Delete(':examId/assistant/:userId')
+  async deleteAssistant(
+    @User() user: Users,
+    @Param('examId') examId: string,
+    @Param('userId') assistantUserId: string,
+  ) {
+    await this.examService.deleteAssistant(user.id, +examId, +assistantUserId);
   }
 }

@@ -53,4 +53,8 @@ export class UsersService {
 
     return user;
   }
+
+  async delete(userId: number) {
+    await this.usersRepository.softDelete({ id: userId });
+  }
 }
