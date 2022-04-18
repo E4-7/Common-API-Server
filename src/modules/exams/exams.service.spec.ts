@@ -116,7 +116,7 @@ describe('ExamService', () => {
         examUsersRepository.createQueryBuilder().getMany,
       ).toHaveBeenCalled();
       expect(result).toEqual(examUserDataArray);
-    };);
+    });
   });
 
   describe('create', () => {
