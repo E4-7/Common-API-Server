@@ -1,5 +1,4 @@
 import {
-  BadRequestException,
   Inject,
   Injectable,
   Logger,
@@ -9,13 +8,10 @@ import {
 } from '@nestjs/common';
 import { CreateExamDto } from './dto/create-exam.dto';
 import { UpdateExamDto } from './dto/update-exam.dto';
-import { Exams } from './entities/exams.entity';
-import { Connection } from 'typeorm';
 import { ExamUsers } from './entities/exams-users.entity';
 import {
   CANT_DELETE_MYSELF,
   NEED_AUTHENTIFICATION,
-  UNKNOWN_ERR,
 } from '../../common/constants/error.constant';
 import { FilesService } from '../files/files.service';
 import { ExamsRepository } from './repositories/exams.repository';
@@ -23,6 +19,7 @@ import { ExamsUsersRepository } from './repositories/exams-users.repository';
 import { SignupDto } from '../users/dto/signup-user.dto';
 import { UsersService } from '../users/users.service';
 import { UserRole } from '../users/constants/user-role.enum';
+import { Transactional } from 'typeorm-transactional-cls-hooked';
 
 @Injectable()
 export class ExamsService {
@@ -32,34 +29,22 @@ export class ExamsService {
     private readonly examsUsersRepository: ExamsUsersRepository,
     private fileService: FilesService,
     private userService: UsersService,
-    private connection: Connection,
   ) {}
 
+  @Transactional()
   async create(createExamDto: CreateExamDto, userId: number) {
-    const queryRunner = this.connection.createQueryRunner();
-    await queryRunner.connect();
-    await queryRunner.startTransaction();
-    try {
-      const exam = await queryRunner.manager.getRepository(Exams).create();
-      exam.OwnerId = userId;
-      exam.exam_time = createExamDto.exam_time;
-      exam.is_openbook = createExamDto.is_openbook;
-      exam.name = createExamDto.name;
-      exam.ExamPaper = null;
-      await queryRunner.manager.getRepository(Exams).save(exam);
-      const examMember = queryRunner.manager.getRepository(ExamUsers).create();
-      examMember.UserId = userId;
-      examMember.ExamId = exam.id;
-      await queryRunner.manager.getRepository(ExamUsers).save(examMember);
-      await queryRunner.commitTransaction();
-      return exam;
-    } catch (error) {
-      this.logger.error(error);
-      await queryRunner.rollbackTransaction();
-      throw new BadRequestException(UNKNOWN_ERR);
-    } finally {
-      await queryRunner.release();
-    }
+    const exam = this.examsRepository.create();
+    exam.OwnerId = userId;
+    exam.exam_time = createExamDto.exam_time;
+    exam.is_openbook = createExamDto.is_openbook;
+    exam.name = createExamDto.name;
+    exam.ExamPaper = null;
+    await this.examsRepository.save(exam);
+    const examUser = this.examsUsersRepository.create();
+    examUser.UserId = userId;
+    examUser.ExamId = exam.id;
+    await this.examsUsersRepository.save(examUser);
+    return exam;
   }
 
   async findMyExamAll(userId: number) {
@@ -106,6 +91,7 @@ export class ExamsService {
     await this.examsRepository.delete({ id: +examId });
   }
 
+  @Transactional()
   async uploadPaper(userId: number, examId: number, file: Express.Multer.File) {
     const exam = await this.examsRepository.findOne({
       where: { id: examId },
@@ -121,9 +107,11 @@ export class ExamsService {
     const uploadedFile = await this.fileService.uploadFile(file);
     exam.ExamPaper = uploadedFile;
     const savedExam = await this.examsRepository.save(exam);
+    // TODO: driver에 따른 file service 분기 -> rollback시 aws 파일 delete 로직 추가
     return savedExam;
   }
 
+  @Transactional()
   async createAssistant(
     createAssistantDto: SignupDto,
     examId: number,
@@ -134,18 +122,18 @@ export class ExamsService {
       throw new UnauthorizedException(NEED_AUTHENTIFICATION);
     }
 
-    //TODO: Transaction
-    const asssitantUser = await this.userService.join(
+    const assitantUser = await this.userService.join(
       createAssistantDto.email,
       createAssistantDto.name,
       createAssistantDto.password,
       UserRole.ASSISTANT,
     );
+    const { password, ...excludePasswordAssistantUser } = assitantUser;
     await this.examsUsersRepository.save({
       ExamId: examId,
-      UserId: asssitantUser.id,
+      UserId: assitantUser.id,
     });
-    return asssitantUser;
+    return excludePasswordAssistantUser;
   }
 
   async deleteAssistant(

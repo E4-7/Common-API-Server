@@ -13,8 +13,20 @@ const userData = {
     type: 2,
   },
 };
+
+const signupData = {
+  email: 'happyjarban@gmail.com',
+  password: 'thisispassword',
+  name: 'joasdas',
+};
+
 const userDataAssistant = Object.assign({}, userData);
 userDataAssistant.Role = Object.assign({}, userData.Role);
 userDataAssistant.Role.type = UserRole.ASSISTANT;
 
-export { userData, userDataAssistant };
+const mockUserService = {
+  join: jest.fn().mockResolvedValue({ data: 'data' }),
+  delete: jest.fn().mockResolvedValue({ data: 'data' }),
+};
+
+export { userData, userDataAssistant, mockUserService, signupData };
