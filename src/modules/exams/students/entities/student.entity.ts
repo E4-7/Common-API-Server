@@ -21,7 +21,8 @@ import { Files } from '../../../files/entities/files.entity';
 import { Exams } from '../../entities/exams.entity';
 
 @Entity()
-@Index(['studentID', 'ExamId'])
+@Index(['studentID', 'ExamId'], { unique: true })
+@Index('ExamId', ['ExamId'])
 export class Students extends CommonEntity {
   //시험 ID
   @ManyToOne(() => Exams, (exams) => exams.Students, {
@@ -49,7 +50,7 @@ export class Students extends CommonEntity {
     example: '17011604',
     description: '학번',
   })
-  @Column({ name: 'studentID', length: 15, nullable: false })
+  @Column({ name: 'studentID', nullable: false })
   studentID: number;
 
   @IsBoolean()
