@@ -23,6 +23,7 @@ import { Users } from '../../users/entities/users.entity';
 import { ExamUsers } from './exams-users.entity';
 import { Files } from '../../files/entities/files.entity';
 import { ApiModelProperty } from '@nestjs/swagger/dist/decorators/api-model-property.decorator';
+import { Students } from '../students/entities/student.entity';
 
 @Index('OwnerId', ['OwnerId'])
 @Entity()
@@ -104,4 +105,7 @@ export class Exams extends CommonEntity {
   })
   @JoinColumn([{ name: 'PaperId', referencedColumnName: 'id' }])
   ExamPaper: Files;
+  //시험 <-> 학생
+  @OneToMany(() => Students, (students) => students.Exam)
+  Students: Students[];
 }

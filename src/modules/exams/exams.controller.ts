@@ -82,8 +82,8 @@ export class ExamsController {
   })
   @Roles(UserRole.PROFESSOR, UserRole.ASSISTANT)
   @HttpCode(HttpStatus.OK)
-  @Get(':id')
-  async findUserInExam(@User() user: Users, @Param('id') examId: string) {
+  @Get(':examId')
+  async findUserInExam(@User() user: Users, @Param('examId') examId: string) {
     return await this.examService.findUserInExam(user.id, +examId);
   }
 
@@ -95,13 +95,13 @@ export class ExamsController {
   })
   @HttpCode(HttpStatus.OK)
   @Roles(UserRole.PROFESSOR)
-  @Patch(':id')
+  @Patch(':examId')
   async update(
     @User() user: Users,
-    @Param('id') id: string,
+    @Param('examId') examId: string,
     @Body() updateExamDto: UpdateExamDto,
   ) {
-    return await this.examService.update(user.id, +id, updateExamDto);
+    return await this.examService.update(user.id, +examId, updateExamDto);
   }
 
   @ApiCookieAuth('connect.sid')
@@ -111,8 +111,8 @@ export class ExamsController {
   })
   @HttpCode(HttpStatus.NO_CONTENT)
   @Roles(UserRole.PROFESSOR)
-  @Delete(':id')
-  async delete(@User() user: Users, @Param('id') id: string) {
+  @Delete(':examId')
+  async delete(@User() user: Users, @Param('examId') id: string) {
     await this.examService.delete(user.id, +id);
   }
 
@@ -137,11 +137,11 @@ export class ExamsController {
       },
     },
   })
-  @Post(':id/upload')
+  @Post(':examId/upload')
   async uploadPaper(
     @UploadedFile(new ParsePdfPipe(FileSize._10MB)) file: Express.Multer.File,
     @User() user: Users,
-    @Param('id') examId: string,
+    @Param('examId') examId: string,
   ) {
     return await this.examService.uploadPaper(user.id, +examId, file);
   }
@@ -174,11 +174,11 @@ export class ExamsController {
   })
   @HttpCode(HttpStatus.NO_CONTENT)
   @Roles(UserRole.PROFESSOR)
-  @Delete(':examId/assistant/:userId')
+  @Delete(':examId/assistant/:assistantId')
   async deleteAssistant(
     @User() user: Users,
     @Param('examId') examId: string,
-    @Param('userId') assistantUserId: string,
+    @Param('assistantId') assistantUserId: string,
   ) {
     await this.examService.deleteAssistant(user.id, +examId, +assistantUserId);
   }
