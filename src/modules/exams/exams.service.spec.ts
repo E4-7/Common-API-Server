@@ -224,7 +224,7 @@ describe('ExamService', () => {
       try {
         examRepository.findOne.mockResolvedValue(oneExamData);
         //when
-        await service.update(2, myExamID, newExamDataColumn);
+        await service.uploadPaper(2, myExamID, newExamDataColumn);
       } catch (e) {
         //then
         expect(e).toBeInstanceOf(UnauthorizedException);
