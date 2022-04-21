@@ -84,7 +84,7 @@ export class ExamsController {
   @HttpCode(HttpStatus.OK)
   @Get(':examId')
   async findUserInExam(@User() user: Users, @Param('examId') examId: string) {
-    return await this.examService.findUserInExam(user.id, +examId);
+    return await this.examService.findUserInExam(user.id, examId);
   }
 
   @ApiCookieAuth('connect.sid')
@@ -101,7 +101,7 @@ export class ExamsController {
     @Param('examId') examId: string,
     @Body() updateExamDto: UpdateExamDto,
   ) {
-    return await this.examService.update(user.id, +examId, updateExamDto);
+    return await this.examService.update(user.id, examId, updateExamDto);
   }
 
   @ApiCookieAuth('connect.sid')
@@ -112,8 +112,8 @@ export class ExamsController {
   @HttpCode(HttpStatus.NO_CONTENT)
   @Roles(UserRole.PROFESSOR)
   @Delete(':examId')
-  async delete(@User() user: Users, @Param('examId') id: string) {
-    await this.examService.delete(user.id, +id);
+  async delete(@User() user: Users, @Param('examId') examId: string) {
+    await this.examService.delete(user.id, examId);
   }
 
   @ApiCookieAuth('connect.sid')
@@ -143,7 +143,7 @@ export class ExamsController {
     @User() user: Users,
     @Param('examId') examId: string,
   ) {
-    return await this.examService.uploadPaper(user.id, +examId, file);
+    return await this.examService.uploadPaper(user.id, examId, file);
   }
 
   @ApiCookieAuth('connect.sid')
@@ -162,8 +162,8 @@ export class ExamsController {
   ) {
     return await this.examService.createAssistant(
       createAssistantDto,
-      +examId,
-      +user.id,
+      examId,
+      user.id,
     );
   }
 
@@ -180,6 +180,6 @@ export class ExamsController {
     @Param('examId') examId: string,
     @Param('assistantId') assistantUserId: string,
   ) {
-    await this.examService.deleteAssistant(user.id, +examId, +assistantUserId);
+    await this.examService.deleteAssistant(user.id, examId, assistantUserId);
   }
 }

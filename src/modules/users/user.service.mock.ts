@@ -4,7 +4,7 @@ const userData = {
   email: 'happyjarban@gmail.com',
   name: '조찬민',
   deleted_at: null,
-  id: 9,
+  id: '123e4567-e89b-12d3-a456-426614174000',
   created_at: '2022-04-11T05:17:18.618Z',
   updated_at: '2022-04-11T05:17:18.618Z',
   status: 1,

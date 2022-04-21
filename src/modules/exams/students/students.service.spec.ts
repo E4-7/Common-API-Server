@@ -16,7 +16,6 @@ import {
 } from '../../../common/constants/error.constant';
 import {
   InternalServerErrorException,
-  NotFoundException,
   UnauthorizedException,
 } from '@nestjs/common';
 
@@ -70,30 +69,30 @@ describe('StudentsService', () => {
 
   describe('create', () => {
     it('save에서 중복키 에러 발생 시', async () => {
-      examUsersRepository.find.mockReturnValue([{ UserId: 0 }]);
+      examUsersRepository.find.mockReturnValue([{ UserId: '0' }]);
       studentRepository.save.mockReturnValue(
         new InternalServerErrorException(),
       );
       try {
-        await service.create(0, 0, { students: [] });
+        await service.create('0', '0', { students: [] });
       } catch (e) {
         expect(e.message).toBe(ALREADY_HAS_ID);
         expect(e).toBeInstanceOf(InternalServerErrorException);
       }
     });
     it('성공', async () => {
-      examUsersRepository.find.mockReturnValue([{ UserId: 0 }]);
+      examUsersRepository.find.mockReturnValue([{ UserId: '0' }]);
       studentRepository.save.mockReturnValue([]);
-      const result = await service.create(0, 0, { students: [] });
+      const result = await service.create('0', '0', { students: [] });
       expect(result).toStrictEqual([]);
     });
   });
 
   describe('findAll', () => {
     it('성공', async () => {
-      examUsersRepository.find.mockReturnValue([{ UserId: 0 }]);
+      examUsersRepository.find.mockReturnValue([{ UserId: '0' }]);
       studentRepository.createQueryBuilder().getMany.mockReturnValue({});
-      const result = await service.findAll(0, 0);
+      const result = await service.findAll('0', '0');
       expect(result).toStrictEqual({});
     });
   });
@@ -104,13 +103,13 @@ describe('StudentsService', () => {
       studentRepository.findOne.mockReturnValue(null);
       try {
         //when
-        await service.isStudentIsAuthentic(1, {
+        await service.isStudentIsAuthentic('1', {
           name: 'asd',
-          studentID: '123',
+          studentID: 123,
         });
       } catch (e) {
         //then
-        expect(e).toBeInstanceOf(NotFoundException);
+        expect(e).toBeInstanceOf(UnauthorizedException);
       }
     });
   });
@@ -120,9 +119,9 @@ describe('StudentsService', () => {
       try {
         const updateDTO = { name: '안녕', studentID: '170604' };
         studentRepository.findOne.mockReturnValue(null);
-        await service.uploadAnswer(1, updateDTO, {} as Express.Multer.File);
+        await service.uploadAnswer('1', updateDTO, {} as Express.Multer.File);
       } catch (e) {
-        expect(e).toBeInstanceOf(NotFoundException);
+        expect(e).toBeInstanceOf(UnauthorizedException);
       }
     });
     //나머진 업로드 과정 동일하므로 생략
@@ -134,12 +133,12 @@ describe('StudentsService', () => {
         const updateDTO = { name: '안녕', studentID: '170604' };
         studentRepository.findOne.mockReturnValue(null);
         await service.uploadSelfAuthenticationImage(
-          1,
+          '1',
           updateDTO,
           {} as Express.Multer.File,
         );
       } catch (e) {
-        expect(e).toBeInstanceOf(NotFoundException);
+        expect(e).toBeInstanceOf(UnauthorizedException);
       }
     });
     //나머진 업로드 과정 동일하므로 생략
@@ -148,20 +147,20 @@ describe('StudentsService', () => {
   describe('update', () => {
     it('정상', async () => {
       const updateDTO = { name: '안녕' };
-      const studentData = { ExamId: 1 };
+      const studentData = { ExamId: '1' };
       studentRepository.findOne.mockReturnValue(studentData);
-      examUsersRepository.find.mockReturnValue([{ UserId: 1 }]);
-      await service.update(1, 1, 1, updateDTO);
+      examUsersRepository.find.mockReturnValue([{ UserId: '1' }]);
+      await service.update('1', '1', '1', updateDTO);
       expect(studentRepository.save).toHaveBeenCalledTimes(1);
     });
   });
 
   describe('remove', () => {
     it('정상', async () => {
-      const studentData = { ExamId: 1 };
+      const studentData = { ExamId: '1' };
       studentRepository.findOne.mockReturnValue(studentData);
-      examUsersRepository.find.mockReturnValue([{ UserId: 1 }]);
-      await service.remove(1, 1, 1);
+      examUsersRepository.find.mockReturnValue([{ UserId: '1' }]);
+      await service.remove('1', '1', '1');
       expect(studentRepository.softDelete).toHaveBeenCalledTimes(1);
     });
   });
@@ -170,7 +169,7 @@ describe('StudentsService', () => {
     it('실패(examUsers 부재)', async () => {
       try {
         examUsersRepository.find.mockReturnValue(null);
-        await service.validateUserExam(0, 0);
+        await service.validateUserExam('0', '0');
       } catch (e) {
         expect(e.message).toBe(NEED_AUTHENTIFICATION);
         expect(e).toBeInstanceOf(UnauthorizedException);
@@ -178,16 +177,16 @@ describe('StudentsService', () => {
     });
     it('실패(멤버가 아닌경우)', async () => {
       try {
-        examUsersRepository.find.mockReturnValue([{ UserId: 1 }]);
-        await service.validateUserExam(0, 0);
+        examUsersRepository.find.mockReturnValue([{ UserId: '1' }]);
+        await service.validateUserExam('0', '0');
       } catch (e) {
         expect(e.message).toBe(NEED_AUTHENTIFICATION);
         expect(e).toBeInstanceOf(UnauthorizedException);
       }
     });
     it('성공', async () => {
-      examUsersRepository.find.mockReturnValue([{ UserId: 0 }]);
-      await service.validateUserExam(0, 0);
+      examUsersRepository.find.mockReturnValue([{ UserId: '0' }]);
+      await service.validateUserExam('0', '0');
     });
   });
 
@@ -195,7 +194,7 @@ describe('StudentsService', () => {
     it('실패(student 부재)', async () => {
       try {
         studentRepository.findOne.mockReturnValue(null);
-        await service.validateStudentInExam(0, 0);
+        await service.validateStudentInExam('0', '0');
       } catch (e) {
         expect(e.message).toBe(NEED_AUTHENTIFICATION);
         expect(e).toBeInstanceOf(UnauthorizedException);
@@ -203,17 +202,17 @@ describe('StudentsService', () => {
     });
     it('실패(student.examid !==examid)', async () => {
       try {
-        studentRepository.findOne.mockReturnValue({ ExamId: 1 });
-        await service.validateStudentInExam(0, 0);
+        studentRepository.findOne.mockReturnValue({ ExamId: '1' });
+        await service.validateStudentInExam('0', '0');
       } catch (e) {
         expect(e.message).toBe(NEED_AUTHENTIFICATION);
         expect(e).toBeInstanceOf(UnauthorizedException);
       }
     });
     it('성공', async () => {
-      const studentData = { ExamId: 0 };
+      const studentData = { ExamId: '0' };
       studentRepository.findOne.mockReturnValue(studentData);
-      const result = await service.validateStudentInExam(0, 0);
+      const result = await service.validateStudentInExam('0', '0');
       expect(result).toStrictEqual(studentData);
     });
   });

@@ -2,7 +2,7 @@ const MockexamUserDataArray = [
   {
     created_at: '2022-04-08T14:56:02.045Z',
     Exam: {
-      id: 1,
+      id: '123e4567-e89b-12d3-a456-426614174000.',
       created_at: '2022-04-08T14:30:40.122Z',
       updated_at: '2022-04-08T14:30:40.122Z',
       name: '운영체제 3반',
@@ -11,17 +11,17 @@ const MockexamUserDataArray = [
       ExamPaper: null,
       deleted_at: null,
       status: 1,
-      OwnerId: 1,
+      OwnerId: '123e4567-e89b-12d3-a456-426614174000.',
     },
   },
 ];
 const MockoneExamData = {
-  OwnerId: 1,
+  OwnerId: '1',
   exam_time: '2021-07-17T14:30:00+09:00',
   is_openbook: true,
   name: '운영체제 3반',
   deleted_at: null,
-  id: 1,
+  id: '123e4567-e89b-12d3-a456-426614174000.',
   ExamPaper: null,
   created_at: '2022-04-10T16:30:23.761Z',
   updated_at: '2022-04-10T16:30:23.761Z',

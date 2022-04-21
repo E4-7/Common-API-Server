@@ -1,21 +1,8 @@
-import {
-  CreateDateColumn,
-  PrimaryGeneratedColumn,
-  UpdateDateColumn,
-} from 'typeorm';
-import { IsDate, IsNotEmpty, IsNumber } from 'class-validator';
+import { CreateDateColumn, UpdateDateColumn } from 'typeorm';
+import { IsDate, IsNotEmpty } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 
-export abstract class CommonEntity {
-  @IsNumber()
-  @IsNotEmpty()
-  @ApiProperty({
-    example: '1',
-    description: '고유 id',
-  })
-  @PrimaryGeneratedColumn({ type: 'int', name: 'id' })
-  id: number;
-
+export abstract class CommonDateEntity {
   @IsDate()
   @IsNotEmpty()
   @ApiProperty({

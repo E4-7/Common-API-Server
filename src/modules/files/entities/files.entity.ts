@@ -1,12 +1,12 @@
 import { Column, Entity, OneToOne } from 'typeorm';
 import { IsNotEmpty, IsNumber, IsString } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
-import { CommonEntity } from '../../../common/abstract/common.entity';
 import { Exams } from '../../exams/entities/exams.entity';
 import { Students } from '../../exams/students/entities/student.entity';
+import { CommonIdEntity } from '../../../common/abstract/common-id.entity';
 
 @Entity()
-export class Files extends CommonEntity {
+export class Files extends CommonIdEntity {
   @IsString()
   @IsNotEmpty()
   @Column({ unique: true })

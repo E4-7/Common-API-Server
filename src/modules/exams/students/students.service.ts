@@ -1,7 +1,6 @@
 import {
   Injectable,
   InternalServerErrorException,
-  NotFoundException,
   UnauthorizedException,
 } from '@nestjs/common';
 import { CreateStudentDto } from './dto/create-student.dto';
@@ -26,8 +25,8 @@ export class StudentsService {
   ) {}
 
   async create(
-    userId: number,
-    examId: number,
+    userId: string,
+    examId: string,
     createStudentDto: CreateStudentDto,
   ) {
     await this.validateUserExam(userId, examId);
@@ -46,7 +45,7 @@ export class StudentsService {
     }
   }
 
-  async findAll(userId: number, examId: number) {
+  async findAll(userId: string, examId: string) {
     await this.validateUserExam(userId, examId);
     return await this.studentRepository
       .createQueryBuilder('students')
@@ -69,8 +68,8 @@ export class StudentsService {
       .getMany();
   }
 
-  async isStudentIsAuthentic(examId: number, findStudentDTO: FindStudentDto) {
-    const student = this.studentRepository.findOne({
+  async isStudentIsAuthentic(examId: string, findStudentDTO: FindStudentDto) {
+    const student = await this.studentRepository.findOne({
       where: {
         ExamId: examId,
         name: findStudentDTO.name,
@@ -78,12 +77,12 @@ export class StudentsService {
       },
     });
     if (!student) {
-      throw new NotFoundException();
+      throw new UnauthorizedException();
     }
   }
 
   async uploadAnswer(
-    examId: number,
+    examId: string,
     findStudentDTO: FindStudentDto,
     file: Express.Multer.File,
   ) {
@@ -92,7 +91,7 @@ export class StudentsService {
       relations: ['ExamAnswer', 'CertificatedImage'],
     });
     if (!student) {
-      throw new NotFoundException();
+      throw new UnauthorizedException();
     }
     if (student.ExamAnswer) {
       await this.fileService.deleteFile(student.CertificatedImage.key);
@@ -104,7 +103,7 @@ export class StudentsService {
   }
 
   async uploadSelfAuthenticationImage(
-    examId: number,
+    examId: string,
     findStudentDTO: FindStudentDto,
     file: Express.Multer.File,
   ) {
@@ -113,7 +112,7 @@ export class StudentsService {
       relations: ['ExamAnswer', 'CertificatedImage'],
     });
     if (!student) {
-      throw new NotFoundException();
+      throw new UnauthorizedException();
     }
     if (student.CertificatedImage) {
       await this.fileService.deleteFile(student.CertificatedImage.key);
@@ -125,9 +124,9 @@ export class StudentsService {
   }
 
   async update(
-    userId: number,
-    examId: number,
-    studentId: number,
+    userId: string,
+    examId: string,
+    studentId: string,
     updateStudentDto: UpdateStudentDto,
   ) {
     await this.validateUserExam(userId, examId);
@@ -139,13 +138,13 @@ export class StudentsService {
     return student;
   }
 
-  async remove(userId: number, examId: number, studentId: number) {
+  async remove(userId: string, examId: string, studentId: string) {
     await this.validateUserExam(userId, examId);
     await this.validateStudentInExam(examId, studentId);
     await this.studentRepository.softDelete({ id: studentId });
   }
 
-  async validateUserExam(userId: number, examId: number) {
+  async validateUserExam(userId: string, examId: string) {
     const examUsers = await this.examUserRepository.find({ ExamId: examId });
     if (!examUsers) {
       throw new UnauthorizedException(NEED_AUTHENTIFICATION);
@@ -156,7 +155,7 @@ export class StudentsService {
     }
   }
 
-  async validateStudentInExam(examId: number, studentId: number) {
+  async validateStudentInExam(examId: string, studentId: string) {
     const student = await this.studentRepository.findOne({ id: studentId });
     if (!student || student.ExamId !== examId) {
       throw new UnauthorizedException(NEED_AUTHENTIFICATION);

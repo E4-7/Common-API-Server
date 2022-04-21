@@ -1,30 +1,17 @@
-import {
-  Column,
-  CreateDateColumn,
-  Entity,
-  Index,
-  JoinColumn,
-  ManyToOne,
-  UpdateDateColumn,
-} from 'typeorm';
+import { Column, Entity, Index, JoinColumn, ManyToOne } from 'typeorm';
 import { Exams } from './exams.entity';
 import { Users } from '../../users/entities/users.entity';
+import { CommonDateEntity } from '../../../common/abstract/common-date.entity';
 
 @Index('UserId', ['UserId'], {})
 @Index('ExamId', ['ExamId'], {})
 @Entity('examusers')
-export class ExamUsers {
-  @CreateDateColumn()
-  created_at: Date;
+export class ExamUsers extends CommonDateEntity {
+  @Column('varchar', { primary: true, name: 'ExamId', length: 200 })
+  ExamId: string;
 
-  @UpdateDateColumn()
-  updated_at: Date;
-
-  @Column('int', { primary: true, name: 'ExamId' })
-  ExamId: number;
-
-  @Column('int', { primary: true, name: 'UserId' })
-  UserId: number;
+  @Column('varchar', { primary: true, name: 'UserId', length: 200 })
+  UserId: string;
 
   @ManyToOne(() => Exams, (exams) => exams.ExamUsers, {
     onDelete: 'CASCADE',

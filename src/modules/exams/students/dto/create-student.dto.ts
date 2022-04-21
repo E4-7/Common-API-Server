@@ -1,4 +1,4 @@
-import { IsArray, IsNotEmpty, IsString } from 'class-validator';
+import { IsArray, IsNotEmpty, IsString, ValidateNested } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 
 export class SignupStudentDTO {
@@ -10,17 +10,17 @@ export class SignupStudentDTO {
   })
   name: string;
 
-  @IsString()
   @IsNotEmpty()
   @ApiProperty({
     example: '12345567',
     description: '학번',
   })
-  studentID: string;
+  studentID: number | string;
 }
 
 export class CreateStudentDto {
   @IsArray()
+  @ValidateNested({ each: true })
   @IsNotEmpty()
   @ApiProperty({
     example: '[{name:"조찬민",studentId:"17011604"}]',
