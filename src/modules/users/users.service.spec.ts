@@ -109,7 +109,7 @@ describe('UsersService', () => {
   });
   describe('delete', () => {
     it('정상적으로 잘 삭제됐을 경우(soft-delete)', async () => {
-      await service.delete(0);
+      await service.delete('0');
       expect(userRepository.softDelete).toHaveBeenCalledTimes(1);
     });
   });

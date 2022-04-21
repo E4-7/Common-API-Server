@@ -1,4 +1,3 @@
-import { CommonEntity } from '../../../common/abstract/common.entity';
 import {
   Column,
   DeleteDateColumn,
@@ -24,10 +23,11 @@ import { ExamUsers } from './exams-users.entity';
 import { Files } from '../../files/entities/files.entity';
 import { ApiModelProperty } from '@nestjs/swagger/dist/decorators/api-model-property.decorator';
 import { Students } from '../students/entities/student.entity';
+import { CommonUUIDEntity } from '../../../common/abstract/common-uuid.entity';
 
 @Index('OwnerId', ['OwnerId'])
 @Entity()
-export class Exams extends CommonEntity {
+export class Exams extends CommonUUIDEntity {
   @IsString()
   @IsNotEmpty()
   @ApiProperty({
@@ -89,8 +89,8 @@ export class Exams extends CommonEntity {
   })
   ExamUsers: ExamUsers[];
   //owner
-  @Column('int', { name: 'OwnerId', nullable: true })
-  OwnerId: number | null;
+  @Column('varchar', { name: 'OwnerId', nullable: true, length: 200 })
+  OwnerId: string | null;
 
   @ManyToOne(() => Users, (users) => users.Exams, {
     onDelete: 'SET NULL',

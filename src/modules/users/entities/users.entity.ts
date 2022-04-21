@@ -9,7 +9,6 @@ import {
   ManyToOne,
   OneToMany,
 } from 'typeorm';
-import { CommonEntity } from '../../../common/abstract/common.entity';
 import { UserStatus } from '../constants/user-status.enum';
 import { Roles } from './roles.entity';
 import {
@@ -22,10 +21,11 @@ import {
 import { ApiProperty } from '@nestjs/swagger';
 import { Exams } from '../../exams/entities/exams.entity';
 import { ExamUsers } from '../../exams/entities/exams-users.entity';
+import { CommonUUIDEntity } from '../../../common/abstract/common-uuid.entity';
 
 @Index('email', ['email'], { unique: true })
 @Entity()
-export class Users extends CommonEntity {
+export class Users extends CommonUUIDEntity {
   @IsEmail()
   @IsNotEmpty()
   @ApiProperty({

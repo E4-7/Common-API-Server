@@ -1,4 +1,3 @@
-import { CommonEntity } from '../../../../common/abstract/common.entity';
 import {
   Column,
   DeleteDateColumn,
@@ -19,11 +18,12 @@ import { ApiProperty } from '@nestjs/swagger';
 import { ApiModelProperty } from '@nestjs/swagger/dist/decorators/api-model-property.decorator';
 import { Files } from '../../../files/entities/files.entity';
 import { Exams } from '../../entities/exams.entity';
+import { CommonUUIDEntity } from '../../../../common/abstract/common-uuid.entity';
 
 @Entity()
 @Index(['studentID', 'ExamId'], { unique: true })
 @Index('ExamId', ['ExamId'])
-export class Students extends CommonEntity {
+export class Students extends CommonUUIDEntity {
   //시험 ID
   @ManyToOne(() => Exams, (exams) => exams.Students, {
     onDelete: 'CASCADE',
@@ -32,8 +32,8 @@ export class Students extends CommonEntity {
   @JoinColumn([{ name: 'ExamId', referencedColumnName: 'id' }])
   Exam: Exams;
 
-  @Column('int', { name: 'ExamId', nullable: true })
-  ExamId: number | null;
+  @Column('varchar', { name: 'ExamId', nullable: true, length: 200 })
+  ExamId: string | null;
 
   @IsString()
   @IsNotEmpty()
@@ -47,10 +47,10 @@ export class Students extends CommonEntity {
   @IsNumber()
   @IsNotEmpty()
   @ApiProperty({
-    example: '17011604',
+    example: 17011604,
     description: '학번',
   })
-  @Column({ name: 'studentID', nullable: false })
+  @Column('int', { name: 'studentID', nullable: false })
   studentID: number;
 
   @IsBoolean()

@@ -54,15 +54,11 @@ export class StudentsController {
   @HttpCode(HttpStatus.CREATED)
   @Post()
   async create(
-    @Param('examId') examId: number,
+    @Param('examId') examId: string,
     @Body() createStudentDto: CreateStudentDto,
     @User() user: Users,
   ) {
-    return await this.studentsService.create(
-      +user.id,
-      +examId,
-      createStudentDto,
-    );
+    return await this.studentsService.create(user.id, examId, createStudentDto);
   }
 
   @ApiCookieAuth('connect.sid')
@@ -75,8 +71,8 @@ export class StudentsController {
   @Roles(UserRole.PROFESSOR, UserRole.ASSISTANT)
   @HttpCode(HttpStatus.OK)
   @Get()
-  async findAll(@Param('examId') examId: number, @User() user: Users) {
-    return await this.studentsService.findAll(+user.id, +examId);
+  async findAll(@Param('examId') examId: string, @User() user: Users) {
+    return await this.studentsService.findAll(user.id, examId);
   }
 
   @ApiCookieAuth('connect.sid')
@@ -100,12 +96,12 @@ export class StudentsController {
   })
   @Post('upload/answer')
   async uploadAnswer(
-    @Param('examId') examId: number,
+    @Param('examId') examId: string,
     @Body() findStudentDTO: FindStudentDto,
     @UploadedFile(new ParsePdfPipe(FileSize._10MB)) file: Express.Multer.File,
   ) {
     return await this.studentsService.uploadAnswer(
-      +examId,
+      examId,
       findStudentDTO,
       file,
     );
@@ -132,12 +128,12 @@ export class StudentsController {
   @HttpCode(HttpStatus.OK)
   @Post('upload/authentication')
   async uploadSelfAuthenticationImage(
-    @Param('examId') examId: number,
+    @Param('examId') examId: string,
     @Body() findStudentDTO: FindStudentDto,
     @UploadedFile(new ParseImagePipe(FileSize._10MB)) file: Express.Multer.File,
   ) {
     return await this.studentsService.uploadSelfAuthenticationImage(
-      +examId,
+      examId,
       findStudentDTO,
       file,
     );
@@ -148,13 +144,13 @@ export class StudentsController {
     description: '성공',
   })
   @HttpCode(HttpStatus.NO_CONTENT)
-  @Get('authentic')
+  @Post('authentic')
   async isStudentIsAuthentic(
-    @Param('examId') examId: number,
+    @Param('examId') examId: string,
     @Body() findStudentDTO: FindStudentDto,
   ) {
     return await this.studentsService.isStudentIsAuthentic(
-      +examId,
+      examId,
       findStudentDTO,
     );
   }
@@ -169,15 +165,15 @@ export class StudentsController {
   @HttpCode(HttpStatus.OK)
   @Patch(':studentId')
   async update(
-    @Param('examId') examId: number,
-    @Param('studentId') studentId: number,
+    @Param('examId') examId: string,
+    @Param('studentId') studentId: string,
     @User() user: Users,
     @Body() updateStudentDto: UpdateStudentDto,
   ) {
     return await this.studentsService.update(
-      +user.id,
-      +examId,
-      +studentId,
+      user.id,
+      examId,
+      studentId,
       updateStudentDto,
     );
   }
@@ -191,10 +187,10 @@ export class StudentsController {
   @HttpCode(HttpStatus.NO_CONTENT)
   @Delete(':studentId')
   remove(
-    @Param('examId') examId: number,
-    @Param('studentId') studentId: number,
+    @Param('examId') examId: string,
+    @Param('studentId') studentId: string,
     @User() user: Users,
   ) {
-    return this.studentsService.remove(+user.id, +examId, +studentId);
+    return this.studentsService.remove(user.id, examId, studentId);
   }
 }

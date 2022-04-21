@@ -1,10 +1,10 @@
-import { CommonEntity } from '../../../common/abstract/common.entity';
 import { Column, Entity, OneToMany } from 'typeorm';
 import { UserRole } from '../constants/user-role.enum';
 import { Users } from './users.entity';
+import { CommonIdEntity } from '../../../common/abstract/common-id.entity';
 
 @Entity()
-export class Roles extends CommonEntity {
+export class Roles extends CommonIdEntity {
   @Column('enum', {
     name: 'type',
     enum: UserRole,

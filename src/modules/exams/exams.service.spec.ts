@@ -27,8 +27,8 @@ import { UsersService } from '../users/users.service';
 import { ExamUsers } from './entities/exams-users.entity';
 import { mockUserService, signupData } from '../users/user.service.mock';
 
-const myUserID = 1,
-  myExamID = 1;
+const myUserID = '1',
+  myExamID = '1';
 
 jest.mock('typeorm-transactional-cls-hooked', () => ({
   Transactional: () => () => ({}),
@@ -97,20 +97,20 @@ describe('ExamService', () => {
     it('쿼리빌더 테스트', async () => {
       //given
       //when
-      await service.findMyExamAll(0);
+      await service.findMyExamAll('0');
       //then
       expect(examUsersRepository.createQueryBuilder).toHaveBeenCalledTimes(1);
       expect(
         examUsersRepository.createQueryBuilder().leftJoin,
       ).toHaveBeenCalledTimes(2);
-    });
+    };);
     it('성공 테스트', async () => {
       //given
       jest
         .spyOn(examUsersRepository.createQueryBuilder(), 'getMany')
         .mockResolvedValue(examUserDataArray);
       //when
-      const result = await service.findMyExamAll(0);
+      const result = await service.findMyExamAll('0');
       //then
       expect(
         examUsersRepository.createQueryBuilder().getMany,
@@ -123,7 +123,7 @@ describe('ExamService', () => {
     it('성공케이스', async () => {
       examRepository.create.mockReturnValue(oneExamData);
       examUsersRepository.create.mockReturnValue(new ExamUsers());
-      const result = await service.create(newExamDataColumn, 1);
+      const result = await service.create(newExamDataColumn, '1');
       expect(examRepository.create).toHaveBeenCalledTimes(1);
       expect(examRepository.save).toHaveBeenCalledTimes(1);
       expect(examUsersRepository.create).toHaveBeenCalledTimes(1);
@@ -135,11 +135,11 @@ describe('ExamService', () => {
   describe('update', () => {
     it('fineOne 메소드 작동', async () => {
       try {
-        await service.update(-1, -1, newExamDataColumn);
+        await service.update('-1', '-1', newExamDataColumn);
       } catch (e) {}
       expect(examRepository.findOne).toHaveBeenCalledTimes(1);
       expect(examRepository.findOne).toHaveBeenCalledWith({
-        where: { id: -1 },
+        where: {id: '-1'},
         relations: ['ExamPaper'],
       });
     });
@@ -147,7 +147,7 @@ describe('ExamService', () => {
       try {
         examRepository.findOne.mockResolvedValue(oneExamData);
         //when
-        await service.update(2, myExamID, newExamDataColumn);
+        await service.update('2', myExamID, newExamDataColumn);
       } catch (e) {
         //then
         expect(e).toBeInstanceOf(UnauthorizedException);
@@ -158,7 +158,7 @@ describe('ExamService', () => {
       try {
         //when
         examRepository.findOne.mockResolvedValue({});
-        await service.update(myUserID, 2, newExamDataColumn);
+        await service.update(myUserID, '2', newExamDataColumn);
       } catch (e) {
         //then
         expect(e).toBeInstanceOf(UnauthorizedException);
@@ -179,17 +179,17 @@ describe('ExamService', () => {
   describe('delete', () => {
     it('fineOne 메소드 작동여부', async () => {
       try {
-        await service.delete(-1, -1);
+        await service.delete('-1', '-1');
       } catch (e) {}
       expect(examRepository.findOne).toHaveBeenCalledTimes(1);
-      expect(examRepository.findOne).toHaveBeenCalledWith({ id: -1 });
+      expect(examRepository.findOne).toHaveBeenCalledWith({id: '-1'});
     });
     it('본인의 시험번호가 아닐 경우', async () => {
       try {
         //given
         examRepository.findOne.mockResolvedValue(oneExamData);
         //when
-        await service.delete(0, myExamID);
+        await service.delete('0', myExamID);
       } catch (e) {
         //then
         expect(e).toBeInstanceOf(UnauthorizedException);
@@ -201,7 +201,7 @@ describe('ExamService', () => {
         //given
         examRepository.findOne.mockResolvedValue({});
         //when
-        await service.delete(myUserID, 2);
+        await service.delete(myUserID, '2');
       } catch (e) {
         //then
         expect(e).toBeInstanceOf(UnauthorizedException);
@@ -224,7 +224,7 @@ describe('ExamService', () => {
       try {
         examRepository.findOne.mockResolvedValue(oneExamData);
         //when
-        await service.uploadPaper(2, myExamID, newExamDataColumn);
+        await service.uploadPaper('2', myExamID, newExamDataColumn);
       } catch (e) {
         //then
         expect(e).toBeInstanceOf(UnauthorizedException);
@@ -255,7 +255,7 @@ describe('ExamService', () => {
       try {
         examRepository.findOne.mockResolvedValue(oneExamData);
         //when
-        await service.createAssistant(signupData, 2, 2);
+        await service.createAssistant(signupData, '2', '2');
       } catch (e) {
         //then
         expect(e.message).toBe(NEED_AUTHENTIFICATION);
@@ -270,7 +270,7 @@ describe('ExamService', () => {
       try {
         examRepository.findOne.mockResolvedValue(oneExamData);
         //when
-        await service.deleteAssistant(1, 1, 1);
+        await service.deleteAssistant('1', '1', '1');
       } catch (e) {
         //then
         expect(e).toBeInstanceOf(UnprocessableEntityException);
@@ -281,7 +281,7 @@ describe('ExamService', () => {
       try {
         examRepository.findOne.mockResolvedValue(oneExamData);
         //when
-        await service.deleteAssistant(2, myExamID, newExamDataColumn);
+        await service.deleteAssistant('2', myExamID, newExamDataColumn);
       } catch (e) {
         //then
         expect(e).toBeInstanceOf(UnauthorizedException);
@@ -294,7 +294,7 @@ describe('ExamService', () => {
         examRepository.findOne.mockResolvedValue(oneExamData);
         examUsersRepository.findOne.mockReturnValue(null);
         //when
-        await service.deleteAssistant(1, myExamID, newExamDataColumn);
+        await service.deleteAssistant('1', myExamID, newExamDataColumn);
       } catch (e) {
         //then
         expect(e).toBeInstanceOf(UnauthorizedException);
@@ -305,7 +305,7 @@ describe('ExamService', () => {
       examRepository.findOne.mockResolvedValue(oneExamData);
       examUsersRepository.findOne.mockReturnValue({});
       //when
-      await service.deleteAssistant(1, myExamID, newExamDataColumn);
+      await service.deleteAssistant('1', myExamID, newExamDataColumn);
       expect(userService.delete).toHaveBeenCalledTimes(1);
     });
   });

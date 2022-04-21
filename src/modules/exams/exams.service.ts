@@ -32,7 +32,7 @@ export class ExamsService {
   ) {}
 
   @Transactional()
-  async create(createExamDto: CreateExamDto, userId: number) {
+  async create(createExamDto: CreateExamDto, userId: string) {
     const exam = this.examsRepository.create();
     exam.OwnerId = userId;
     exam.exam_time = createExamDto.exam_time;
@@ -47,7 +47,7 @@ export class ExamsService {
     return exam;
   }
 
-  async findMyExamAll(userId: number) {
+  async findMyExamAll(userId: string) {
     return await this.examsUsersRepository
       .createQueryBuilder('ExamUsers')
       .select(['exams', 'ExamUsers.created_at', 'paper'])
@@ -57,7 +57,7 @@ export class ExamsService {
       .getMany();
   }
 
-  async findUserInExam(userId: number, examId: number) {
+  async findUserInExam(userId: string, examId: string) {
     return await this.examsUsersRepository
       .createQueryBuilder('ExamUsers')
       .select(['users', 'ExamUsers.created_at'])
@@ -67,7 +67,7 @@ export class ExamsService {
       .getMany();
   }
 
-  async update(userId: number, examId: number, updateExamDto: UpdateExamDto) {
+  async update(userId: string, examId: string, updateExamDto: UpdateExamDto) {
     const exam = await this.examsRepository.findOne({
       where: { id: examId },
       relations: ['ExamPaper'],
@@ -82,17 +82,17 @@ export class ExamsService {
     return exam;
   }
 
-  async delete(userId: number, examId: number) {
+  async delete(userId: string, examId: string) {
     //사용자 인증 본인의 시험만 삭제 가능
-    const exam = await this.examsRepository.findOne({ id: +examId });
+    const exam = await this.examsRepository.findOne({ id: examId });
     if (!exam || exam.OwnerId !== userId) {
       throw new UnauthorizedException(NEED_AUTHENTIFICATION);
     }
-    await this.examsRepository.delete({ id: +examId });
+    await this.examsRepository.delete({ id: examId });
   }
 
   @Transactional()
-  async uploadPaper(userId: number, examId: number, file: Express.Multer.File) {
+  async uploadPaper(userId: string, examId: string, file: Express.Multer.File) {
     const exam = await this.examsRepository.findOne({
       where: { id: examId },
       relations: ['ExamPaper'],
@@ -114,8 +114,8 @@ export class ExamsService {
   @Transactional()
   async createAssistant(
     createAssistantDto: SignupDto,
-    examId: number,
-    myUserId: number,
+    examId: string,
+    myUserId: string,
   ) {
     const exam = await this.examsRepository.findOne({ id: examId });
     if (exam.OwnerId !== myUserId) {
@@ -137,15 +137,15 @@ export class ExamsService {
   }
 
   async deleteAssistant(
-    myUserId: number,
-    examId: number,
-    assistantUserId: number,
+    myUserId: string,
+    examId: string,
+    assistantUserId: string,
   ) {
     if (myUserId === assistantUserId) {
       throw new UnprocessableEntityException(CANT_DELETE_MYSELF);
     }
     const exam = await this.examsRepository.findOne({ id: examId });
-    if (exam.OwnerId !== myUserId) {
+    if (!exam || exam.OwnerId !== myUserId) {
       throw new UnauthorizedException(NEED_AUTHENTIFICATION);
     }
     const userInExam = await this.examsUsersRepository.findOne({

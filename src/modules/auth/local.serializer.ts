@@ -21,7 +21,7 @@ export class LocalSerializer extends PassportSerializer {
     return await this.usersRepository
       .createQueryBuilder('Users')
       .leftJoin('Users.Role', 'Role')
-      .where('Users.id = :id', { id: +userId })
+      .where('Users.id = :id', { id: userId })
       .select([
         'Role.type',
         'Users.id',
