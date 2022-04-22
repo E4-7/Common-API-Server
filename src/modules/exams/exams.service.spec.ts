@@ -103,7 +103,7 @@ describe('ExamService', () => {
       expect(
         examUsersRepository.createQueryBuilder().leftJoin,
       ).toHaveBeenCalledTimes(2);
-    };);
+    });
     it('성공 테스트', async () => {
       //given
       jest
@@ -139,7 +139,7 @@ describe('ExamService', () => {
       } catch (e) {}
       expect(examRepository.findOne).toHaveBeenCalledTimes(1);
       expect(examRepository.findOne).toHaveBeenCalledWith({
-        where: {id: '-1'},
+        where: { id: '-1' },
         relations: ['ExamPaper'],
       });
     });
@@ -182,7 +182,7 @@ describe('ExamService', () => {
         await service.delete('-1', '-1');
       } catch (e) {}
       expect(examRepository.findOne).toHaveBeenCalledTimes(1);
-      expect(examRepository.findOne).toHaveBeenCalledWith({id: '-1'});
+      expect(examRepository.findOne).toHaveBeenCalledWith({ id: '-1' });
     });
     it('본인의 시험번호가 아닐 경우', async () => {
       try {
