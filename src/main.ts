@@ -20,6 +20,7 @@ import {
 } from 'typeorm-transactional-cls-hooked';
 import { TransformInterceptor } from './common/interceptor/transform.interceptor';
 import { RolesGuard } from './common/guards/roles.guard';
+import compression from 'compression';
 
 declare const module: any;
 
@@ -66,6 +67,7 @@ async function bootstrap() {
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('api', app, document);
   app.use(helmet());
+  app.use(compression());
   app.use(cookieParser());
   app.use(
     session({
