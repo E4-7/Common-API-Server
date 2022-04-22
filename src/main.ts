@@ -1,4 +1,4 @@
-import { NestFactory } from '@nestjs/core';
+import { NestFactory, Reflector } from '@nestjs/core';
 import { NestExpressApplication } from '@nestjs/platform-express';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import passport from 'passport';
@@ -18,6 +18,8 @@ import {
   initializeTransactionalContext,
   patchTypeORMRepositoryWithBaseRepository,
 } from 'typeorm-transactional-cls-hooked';
+import { TransformInterceptor } from './common/interceptor/transform.interceptor';
+import { RolesGuard } from './common/guards/roles.guard';
 
 declare const module: any;
 
@@ -40,12 +42,16 @@ async function bootstrap() {
     }),
   });
   const configService = app.get(ConfigService);
+  const reflector = app.get(Reflector);
+
   app.useGlobalFilters(new HttpExceptionFilter());
   app.useGlobalPipes(
     new ValidationPipe({
       transform: true,
     }),
   );
+  app.useGlobalInterceptors(new TransformInterceptor());
+  app.useGlobalGuards(new RolesGuard(reflector));
 
   app.enableCors({
     origin: true,
