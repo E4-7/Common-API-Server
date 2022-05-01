@@ -1,0 +1,539 @@
+{
+	"info": {
+		"_postman_id": "c1bd7a83-7c08-4459-935b-599328b90d3f",
+		"name": "E47",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "CommonServer",
+			"item": [
+				{
+					"name": "Auth",
+					"item": [
+						{
+							"name": "회원가입",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"email\":\"happyjarban2@gmail.com\",\r\n    \"password\":\"tkdlek110!\",\r\n    \"name\":\"조찬민\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://localhost:3000/api/users",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "3000",
+									"path": [
+										"api",
+										"users"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "정보 가져오기",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "http://localhost:3000/api/users",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "3000",
+									"path": [
+										"api",
+										"users"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "로그인",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"email\":\"happyjarban10@gmail.com\",\r\n    \"password\":\"tkdlek110!\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://localhost:3000/api/users/login",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "3000",
+									"path": [
+										"api",
+										"users",
+										"login"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "로그아웃",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"email\":\"happyjarban10@gmail.com\",\r\n    \"password\":\"tkdlek110!\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://localhost:3000/api/users/logout",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "3000",
+									"path": [
+										"api",
+										"users",
+										"logout"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "Exam",
+					"item": [
+						{
+							"name": "Students",
+							"item": [
+								{
+									"name": "학생 생성하기",
+									"request": {
+										"method": "POST",
+										"header": [],
+										"body": {
+											"mode": "raw",
+											"raw": "{\r\n  \"students\": [\r\n      {\"name\":\"조찬민\",\"studentID\":170116021},{\"name\":\"조찬민\",\"studentID\":170121602}\r\n  ]\r\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "http://localhost:3000/api/exams/88500819-8787-4c43-b5f1-293ff6a12696/students",
+											"protocol": "http",
+											"host": [
+												"localhost"
+											],
+											"port": "3000",
+											"path": [
+												"api",
+												"exams",
+												"88500819-8787-4c43-b5f1-293ff6a12696",
+												"students"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "학생 목록 가져오기",
+									"request": {
+										"method": "GET",
+										"header": [],
+										"url": {
+											"raw": "http://localhost:3000/api/exams/88500819-8787-4c43-b5f1-293ff6a12696/students",
+											"protocol": "http",
+											"host": [
+												"localhost"
+											],
+											"port": "3000",
+											"path": [
+												"api",
+												"exams",
+												"88500819-8787-4c43-b5f1-293ff6a12696",
+												"students"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "학생 수정하기",
+									"request": {
+										"method": "PATCH",
+										"header": [],
+										"body": {
+											"mode": "raw",
+											"raw": "{\r\n    \"name\":\"김김김\",\r\n    \"studentID\":123\r\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "http://localhost:3000/api/exams/88500819-8787-4c43-b5f1-293ff6a12696/students/0cf181f5-368e-4504-b265-3d3aca85a266",
+											"protocol": "http",
+											"host": [
+												"localhost"
+											],
+											"port": "3000",
+											"path": [
+												"api",
+												"exams",
+												"88500819-8787-4c43-b5f1-293ff6a12696",
+												"students",
+												"0cf181f5-368e-4504-b265-3d3aca85a266"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "학생 삭제하기",
+									"request": {
+										"method": "DELETE",
+										"header": [],
+										"url": {
+											"raw": "http://localhost:3000/api/exams/88500819-8787-4c43-b5f1-293ff6a12696/students/8aca12cf-26df-4545-80ff-223389841772",
+											"protocol": "http",
+											"host": [
+												"localhost"
+											],
+											"port": "3000",
+											"path": [
+												"api",
+												"exams",
+												"88500819-8787-4c43-b5f1-293ff6a12696",
+												"students",
+												"8aca12cf-26df-4545-80ff-223389841772"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "학생 정보 유효한지 확인하기",
+									"request": {
+										"method": "POST",
+										"header": [],
+										"body": {
+											"mode": "raw",
+											"raw": "{\r\n    \"name\":\"김김김\",\r\n    \"studentID\": 123\r\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "http://localhost:3000/api/exams/88500819-8787-4c43-b5f1-293ff6a12696/students/authentic",
+											"protocol": "http",
+											"host": [
+												"localhost"
+											],
+											"port": "3000",
+											"path": [
+												"api",
+												"exams",
+												"88500819-8787-4c43-b5f1-293ff6a12696",
+												"students",
+												"authentic"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "학생 -> 답안지 제출",
+									"request": {
+										"method": "POST",
+										"header": [],
+										"body": {
+											"mode": "formdata",
+											"formdata": [
+												{
+													"key": "name",
+													"value": "김김",
+													"type": "default"
+												},
+												{
+													"key": "studentID",
+													"value": "123",
+													"type": "text"
+												},
+												{
+													"key": "file",
+													"type": "file",
+													"src": "/C:/Users/happy/Downloads/springmvc1-v2022-03-07 (1).pdf"
+												}
+											],
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "http://localhost:3000/api/exams/88500819-8787-4c43-b5f1-293ff6a12696/students/upload/answer",
+											"protocol": "http",
+											"host": [
+												"localhost"
+											],
+											"port": "3000",
+											"path": [
+												"api",
+												"exams",
+												"88500819-8787-4c43-b5f1-293ff6a12696",
+												"students",
+												"upload",
+												"answer"
+											]
+										}
+									},
+									"response": []
+								}
+							]
+						},
+						{
+							"name": "시험 생성하기",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n  \"name\": \"운영체제 3반\",\r\n  \"exam_time\": \"2021-07-17T14:30:00+09:00\",\r\n  \"is_openbook\": true,\r\n  \"status\":5\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://localhost:3000/api/exams",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "3000",
+									"path": [
+										"api",
+										"exams"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "시험에 속한 조교 가져오기",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "http://localhost:3000/api/exams/1",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "3000",
+									"path": [
+										"api",
+										"exams",
+										"1"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "시험 삭제하기",
+							"request": {
+								"method": "DELETE",
+								"header": [],
+								"url": {
+									"raw": "http://localhost:3000/api/exams/0676e8fd-5d73-48a5-8afe-ab15a4504044",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "3000",
+									"path": [
+										"api",
+										"exams",
+										"0676e8fd-5d73-48a5-8afe-ab15a4504044"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "시험 업데이트",
+							"request": {
+								"method": "PATCH",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n  \"is_openbook\": true,\r\n  \"status\":3\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://localhost:3000/api/exams/88500819-8787-4c43-b5f1-293ff6a12696",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "3000",
+									"path": [
+										"api",
+										"exams",
+										"88500819-8787-4c43-b5f1-293ff6a12696"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "시험지 업로드",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "formdata",
+									"formdata": [
+										{
+											"key": "file",
+											"type": "file",
+											"src": "/C:/Users/happy/Desktop/chaminjo.pdf"
+										}
+									],
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://localhost:3000/api/exams/1/upload",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "3000",
+									"path": [
+										"api",
+										"exams",
+										"1",
+										"upload"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "조교 만들기",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"name\":\"조찬민\",\r\n    \"email\":\"asd5@asd.com\",\r\n    \"password\":\"thisispassword\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://localhost:3000/api/exams/88500819-8787-4c43-b5f1-293ff6a12696/assistant",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "3000",
+									"path": [
+										"api",
+										"exams",
+										"88500819-8787-4c43-b5f1-293ff6a12696",
+										"assistant"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "조교 삭제",
+							"request": {
+								"method": "DELETE",
+								"header": [],
+								"url": {
+									"raw": "http://localhost:3000/api/exams/88500819-8787-4c43-b5f1-293ff6a12696/assistant/ee63dbf8-4b1f-4590-9506-4fc89637b818",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "3000",
+									"path": [
+										"api",
+										"exams",
+										"88500819-8787-4c43-b5f1-293ff6a12696",
+										"assistant",
+										"ee63dbf8-4b1f-4590-9506-4fc89637b818"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "내 시험가져오기",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "http://localhost:3000/api/exams",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "3000",
+									"path": [
+										"api",
+										"exams"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				}
+			]
+		}
+	]
+}
