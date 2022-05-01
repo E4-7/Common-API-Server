@@ -76,7 +76,7 @@ export class Students extends CommonUUIDEntity {
   lastLogin: Date;
 
   //답안지
-  @ApiModelProperty({ type: Files })
+  @ApiModelProperty({ type: () => Files })
   @OneToOne(() => Files, (files) => files.Student, {
     onDelete: 'SET NULL',
   })
@@ -84,7 +84,7 @@ export class Students extends CommonUUIDEntity {
   ExamAnswer: Files;
 
   //인증 사진
-  @ApiModelProperty({ type: Files })
+  @ApiModelProperty({ type: () => Files })
   @OneToOne(() => Files, (files) => files.StudentImage, {
     onDelete: 'SET NULL',
   })
