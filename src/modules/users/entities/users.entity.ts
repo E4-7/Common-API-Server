@@ -22,6 +22,7 @@ import { ApiProperty } from '@nestjs/swagger';
 import { Exams } from '../../exams/entities/exams.entity';
 import { ExamUsers } from '../../exams/entities/exams-users.entity';
 import { CommonUUIDEntity } from '../../../common/abstract/common-uuid.entity';
+import { UserRole } from '../constants/user-role.enum';
 
 @Index('email', ['email'], { unique: true })
 @Entity()
@@ -74,6 +75,7 @@ export class Users extends CommonUUIDEntity {
   @IsNotEmpty()
   @ApiProperty({
     example: { type: 1 },
+    enum: UserRole,
     description: '역할(조교, 교수)',
   })
   @ManyToOne(() => Roles, (role) => role.Users, {
