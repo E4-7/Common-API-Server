@@ -8,20 +8,17 @@ import { AuthModule } from './modules/auth/auth.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ExamsModule } from './modules/exams/exams.module';
 import * as ormconfig from '../ormconfig';
-import { APP_GUARD, APP_INTERCEPTOR } from '@nestjs/core';
-import { RolesGuard } from './common/guards/roles.guard';
 import {
   utilities as nestWinstonModuleUtilities,
   WinstonModule,
 } from 'nest-winston';
 import winston from 'winston';
-import { TransformInterceptor } from './common/interceptor/transform.interceptor';
 import { FilesModule } from './modules/files/files.module';
 import appConfig from './config/app.config';
 import authConfig from './config/auth.config';
 import databaseConfig from './config/database.config';
-import Joi from 'joi';
 import awsConfig from './config/aws.config';
+import { validationSchema } from './config/env.validation.config';
 
 @Module({
   imports: [
@@ -29,30 +26,7 @@ import awsConfig from './config/aws.config';
       envFilePath: `.env.${process.env.NODE_ENV}`,
       load: [appConfig, authConfig, databaseConfig, awsConfig],
       isGlobal: true,
-      validationSchema: Joi.object({
-        NODE_ENV: Joi.string()
-          .valid('development', 'production', 'stage', 'local')
-          .default('local'),
-        APP_NAME: Joi.string().default('E4/7'),
-        APP_HOST: Joi.string().default('localhost'),
-        npm_package_version: Joi.string().default('0.01'),
-        APP_PORT: Joi.number().default(3000),
-        BACKEND_DOMAIN: Joi.string().default('localhost'),
-        FRONTEND_DOMAIN: Joi.string().default(['*']),
-        DB_HOST: Joi.string().required(),
-        DB_PORT: Joi.number().default(3306),
-        DB_PASSWORD: Joi.string().required(),
-        DB_USERNAME: Joi.string().required(),
-        DB_DATABASE: Joi.string().required(),
-        SECRET: Joi.string().required(),
-        COOKIE_SECRET: Joi.string().required(),
-        AWS_S3_BUCKET_NAME: Joi.string().required(),
-        AWS_ACCESS_KEY_ID: Joi.string().required(),
-        AWS_SECRET_ACCESS_KEY: Joi.string().required(),
-        AWS_REGION: Joi.string().required(),
-        AWS_S3_MAX_FILE_SIZE: Joi.string().required(),
-        FILE_DRIVER: Joi.string().valid('local', 's3').default('local'),
-      }),
+      validationSchema,
     }),
     TypeOrmModule.forRoot(ormconfig),
     UsersModule,
@@ -74,17 +48,7 @@ import awsConfig from './config/aws.config';
     FilesModule,
   ],
   controllers: [AppController],
-  providers: [
-    AppService,
-    {
-      provide: APP_GUARD,
-      useClass: RolesGuard,
-    },
-    {
-      provide: APP_INTERCEPTOR,
-      useClass: TransformInterceptor,
-    },
-  ],
+  providers: [AppService],
 })
 export class AppModule implements NestModule {
   configure(consumer: MiddlewareConsumer): void {

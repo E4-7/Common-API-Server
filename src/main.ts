@@ -1,8 +1,10 @@
-import { NestFactory } from '@nestjs/core';
+import { NestFactory, Reflector } from '@nestjs/core';
 import { NestExpressApplication } from '@nestjs/platform-express';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import passport from 'passport';
 import cookieParser from 'cookie-parser';
+import redis from 'redis';
+import connectRedis from 'connect-redis';
 import session from 'express-session';
 import helmet from 'helmet';
 import { ValidationPipe } from '@nestjs/common';
@@ -18,6 +20,9 @@ import {
   initializeTransactionalContext,
   patchTypeORMRepositoryWithBaseRepository,
 } from 'typeorm-transactional-cls-hooked';
+import { TransformInterceptor } from './common/interceptor/transform.interceptor';
+import { RolesGuard } from './common/guards/roles.guard';
+import compression from 'compression';
 
 declare const module: any;
 
@@ -40,12 +45,16 @@ async function bootstrap() {
     }),
   });
   const configService = app.get(ConfigService);
+  const reflector = app.get(Reflector);
+
   app.useGlobalFilters(new HttpExceptionFilter());
   app.useGlobalPipes(
     new ValidationPipe({
       transform: true,
     }),
   );
+  app.useGlobalInterceptors(new TransformInterceptor());
+  app.useGlobalGuards(new RolesGuard(reflector));
 
   app.enableCors({
     origin: true,
@@ -60,18 +69,42 @@ async function bootstrap() {
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('api', app, document);
   app.use(helmet());
+  app.use(compression());
   app.use(cookieParser());
+
+  const RedisStore = connectRedis(session);
+  const redisClient = redis.createClient();
   app.use(
     session({
       resave: false,
       saveUninitialized: false,
       secret: configService.get('auth.cookie_secret'),
+      store: new RedisStore({
+        client: redisClient,
+        disableTouch: true,
+      }),
       cookie: {
+        maxAge: 100 * 60 * 60 * 24 * 365 * 10,
         httpOnly: true,
+        //sameSite: 'lax',
       },
-      //TODO : DB or redis Session mapping
+      //TODO: logout시, redis session 삭제하도록
     }),
   );
+  /*
+  https://expressjs.com/ko/advanced/best-practice-security.html
+  app.use(session({
+  name: 'session',
+  keys: ['key1', 'key2'],
+  cookie: {
+    secure: true,
+    httpOnly: true,
+    domain: 'example.com',
+    path: 'foo/bar',
+    expires: expiryDate
+  }
+}))
+   */
   app.use(passport.initialize());
   app.use(passport.session());
 
