@@ -71,7 +71,7 @@ async function bootstrap() {
   app.use(helmet());
   app.use(compression());
   app.use(cookieParser());
-
+  app.set('trust proxy', 1);
   const RedisStore = connectRedis(session);
   const redisClient = redis.createClient();
   app.use(
@@ -83,10 +83,12 @@ async function bootstrap() {
         client: redisClient,
         disableTouch: true,
       }),
+      proxy: true,
       cookie: {
         maxAge: 100 * 60 * 60 * 24 * 365 * 10,
         httpOnly: true,
-        //sameSite: 'lax',
+        sameSite: 'none',
+        secure: true,
       },
       //TODO: logout시, redis session 삭제하도록
     }),
