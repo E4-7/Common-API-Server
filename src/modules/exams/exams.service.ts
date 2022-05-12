@@ -20,6 +20,8 @@ import { SignupDto } from '../users/dto/signup-user.dto';
 import { UsersService } from '../users/users.service';
 import { UserRole } from '../users/constants/user-role.enum';
 import { Transactional } from 'typeorm-transactional-cls-hooked';
+import { ConfigService } from '@nestjs/config';
+import { RtcRole, RtcTokenBuilder } from 'agora-access-token';
 
 @Injectable()
 export class ExamsService {
@@ -29,6 +31,7 @@ export class ExamsService {
     private readonly examsUsersRepository: ExamsUsersRepository,
     private fileService: FilesService,
     private userService: UsersService,
+    private readonly configService: ConfigService,
   ) {}
 
   @Transactional()
@@ -39,12 +42,33 @@ export class ExamsService {
     exam.is_openbook = createExamDto.is_openbook;
     exam.name = createExamDto.name;
     exam.ExamPaper = null;
+    const agoraAppId = this.configService.get('agora.appId');
+    const agoraToken = this.generateAgoraToken(exam.id, agoraAppId);
+    exam.agoraAppId = agoraAppId;
+    exam.agoraToken = agoraToken;
     await this.examsRepository.save(exam);
     const examUser = this.examsUsersRepository.create();
     examUser.UserId = userId;
     examUser.ExamId = exam.id;
     await this.examsUsersRepository.save(examUser);
     return exam;
+  }
+
+  generateAgoraToken(channel: string, appId: string) {
+    const appCertificate = this.configService.get('agora.authentic_key');
+    const role = RtcRole.PUBLISHER;
+    const HOUR_TO_SECOND = 3600;
+    const expirationTimeInSeconds = HOUR_TO_SECOND * 24;
+    const currentTimestamp = Math.floor(Date.now() / 1000);
+    const privilegeExpiredTs = currentTimestamp + expirationTimeInSeconds;
+    return RtcTokenBuilder.buildTokenWithUid(
+      appId ?? '',
+      appCertificate ?? '',
+      channel ?? '',
+      123,
+      role,
+      privilegeExpiredTs,
+    );
   }
 
   async findMyExamAll(userId: string) {

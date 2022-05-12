@@ -8,6 +8,7 @@ import { ExamsRepository } from './repositories/exams.repository';
 import { ExamsUsersRepository } from './repositories/exams-users.repository';
 import { UsersModule } from '../users/users.module';
 import { StudentsModule } from './students/students.module';
+import { ConfigService } from '@nestjs/config';
 
 @Module({
   imports: [
@@ -17,7 +18,7 @@ import { StudentsModule } from './students/students.module';
     StudentsModule,
   ],
   controllers: [ExamsController],
-  providers: [ExamsService, Logger],
+  providers: [ExamsService, Logger, ConfigService],
   exports: [StudentsModule],
 })
 export class ExamsModule {}

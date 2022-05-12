@@ -26,6 +26,7 @@ import { FilesRepository } from '../files/repositories/files.repository';
 import { UsersService } from '../users/users.service';
 import { ExamUsers } from './entities/exams-users.entity';
 import { mockUserService, signupData } from '../users/user.service.mock';
+import { ConfigService } from '@nestjs/config';
 
 const myUserID = '1',
   myExamID = '1';
@@ -62,6 +63,7 @@ describe('ExamService', () => {
       ],
       providers: [
         ExamsService,
+        ConfigService,
         {
           provide: ExamsRepository,
           useValue: mockRepository(),
