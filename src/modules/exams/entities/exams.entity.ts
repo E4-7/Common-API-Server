@@ -37,6 +37,24 @@ export class Exams extends CommonUUIDEntity {
   @Column('varchar', { name: 'name', length: 50, nullable: false })
   name: string;
 
+  @IsString()
+  @IsNotEmpty()
+  @ApiProperty({
+    example: 'appID',
+    description: 'agora sdk appID',
+  })
+  @Column('varchar', { name: 'agoraAppId', length: 200, nullable: false })
+  agoraAppId: string;
+
+  @IsString()
+  @IsNotEmpty()
+  @ApiProperty({
+    example: 'token ',
+    description: 'agora sdk token',
+  })
+  @Column('varchar', { name: 'agoraToken', length: 200, nullable: false })
+  agoraToken: string;
+
   @IsDateString()
   @IsNotEmpty()
   @ApiProperty({
