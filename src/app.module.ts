@@ -19,12 +19,13 @@ import authConfig from './config/auth.config';
 import databaseConfig from './config/database.config';
 import awsConfig from './config/aws.config';
 import { validationSchema } from './config/env.validation.config';
+import agoraConfig from './config/agora.config';
 
 @Module({
   imports: [
     ConfigModule.forRoot({
       envFilePath: `.env.${process.env.NODE_ENV}`,
-      load: [appConfig, authConfig, databaseConfig, awsConfig],
+      load: [appConfig, authConfig, databaseConfig, awsConfig, agoraConfig],
       isGlobal: true,
       validationSchema,
     }),
