@@ -23,4 +23,6 @@ export const validationSchema = Joi.object({
   AWS_REGION: Joi.string().required(),
   AWS_S3_MAX_FILE_SIZE: Joi.string().required(),
   FILE_DRIVER: Joi.string().valid('local', 's3').default('local'),
+  AGORA_APP_ID: Joi.string().required(),
+  AGORA_APP_AUTHENTIC_KEY: Joi.string().required(),
 });
