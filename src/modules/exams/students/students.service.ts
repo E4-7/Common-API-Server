@@ -14,7 +14,10 @@ import {
 import { ExamsUsersRepository } from '../repositories/exams-users.repository';
 import { FindStudentDto } from './dto/find-student.dto';
 import { FilesService } from '../../files/files.service';
-
+import { HttpService } from '@nestjs/axios';
+import axios from 'axios';
+import FormData from 'form-data';
+import { map } from 'rxjs/operators';
 @Injectable()
 export class StudentsService {
   constructor(
@@ -22,6 +25,7 @@ export class StudentsService {
     private readonly examRepository: ExamsRepository,
     private readonly examUserRepository: ExamsUsersRepository,
     private fileService: FilesService,
+    private readonly httpService: HttpService,
   ) {}
 
   async create(
@@ -100,6 +104,43 @@ export class StudentsService {
     student.ExamAnswer = uploadedFile;
     const savedStudent = await this.studentRepository.save(student);
     return savedStudent;
+  }
+
+  async checkSelfAuthentication(
+    examId: string,
+    findStudentDTO: FindStudentDto,
+    file: Express.Multer.File,
+  ) {
+    const student = await this.studentRepository.findOne({
+      where: { ExamId: examId, studentID: +findStudentDTO.studentID },
+      relations: ['ExamAnswer', 'CertificatedImage'],
+    });
+    if (!student) {
+      throw new UnauthorizedException();
+    }
+    // 학생증 인증 체크
+    const IMAGE_CHECK_SERVER_URL = 'http://15.164.228.89:3000/';
+
+    const formData = new FormData();
+    formData.append('name', findStudentDTO.name);
+    formData.append('id', findStudentDTO.studentID.toString());
+    formData.append('imagez', Buffer.from(file.buffer), file.originalname);
+
+    try {
+      const { data } = await axios.post(
+        `${IMAGE_CHECK_SERVER_URL}ocr/`,
+        formData,
+        {
+          headers: formData.getHeaders(),
+        },
+      );
+      return {
+        student,
+        data,
+      };
+    } catch (e) {
+      throw new InternalServerErrorException();
+    }
   }
 
   async uploadSelfAuthenticationImage(

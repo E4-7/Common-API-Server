@@ -75,7 +75,6 @@ export class StudentsController {
     return await this.studentsService.findAll(user.id, examId);
   }
 
-  @ApiCookieAuth('connect.sid')
   @ApiOperation({ summary: '답안 업로드' })
   @ApiOkResponse({
     description: '성공',
@@ -107,7 +106,7 @@ export class StudentsController {
     );
   }
 
-  @ApiOperation({ summary: '본인 인증 사진 업로드' })
+  @ApiOperation({ summary: '학생증 인증하기' })
   @ApiOkResponse({
     description: '성공',
     type: Students,
@@ -126,7 +125,39 @@ export class StudentsController {
     },
   })
   @HttpCode(HttpStatus.OK)
-  @Post('upload/authentication')
+  @Post('authentication')
+  async checkSelfAuthentication(
+    @Param('examId') examId: string,
+    @Body() findStudentDTO: FindStudentDto,
+    @UploadedFile(new ParseImagePipe(FileSize._10MB)) file: Express.Multer.File,
+  ) {
+    return await this.studentsService.checkSelfAuthentication(
+      examId,
+      findStudentDTO,
+      file,
+    );
+  }
+
+  @ApiOperation({ summary: '인증된 학생증 및 신분증 사진 업로드' })
+  @ApiOkResponse({
+    description: '성공',
+    type: Students,
+  })
+  @UseInterceptors(FileInterceptor('file'))
+  @ApiConsumes(Mimetype.MULTITYPE_FORM_DATA)
+  @ApiBody({
+    schema: {
+      type: 'object',
+      properties: {
+        file: {
+          type: 'string',
+          format: 'binary',
+        },
+      },
+    },
+  })
+  @HttpCode(HttpStatus.OK)
+  @Post('authentication/image')
   async uploadSelfAuthenticationImage(
     @Param('examId') examId: string,
     @Body() findStudentDTO: FindStudentDto,
