@@ -10,6 +10,7 @@ import { ExamsRepository } from '../repositories/exams.repository';
 import { ExamsUsersRepository } from '../repositories/exams-users.repository';
 import { FilesRepository } from '../../files/repositories/files.repository';
 import { StudentsRepository } from './repositories/students.repository';
+import { mockHttpService } from '../../../common/constants/http-mock.constant';
 import {
   ALREADY_HAS_ID,
   NEED_AUTHENTIFICATION,
@@ -18,10 +19,12 @@ import {
   InternalServerErrorException,
   UnauthorizedException,
 } from '@nestjs/common';
+import { HttpService } from '@nestjs/axios';
 
 describe('StudentsService', () => {
   let service: StudentsService;
   let fileService: FilesService;
+  let httpService: HttpService;
   let examRepository: MockRepository;
   let examUsersRepository: MockRepository;
   let studentRepository: MockRepository;
@@ -37,6 +40,7 @@ describe('StudentsService', () => {
       ],
       providers: [
         StudentsService,
+        { provide: HttpService, useValue: mockHttpService },
         {
           provide: StudentsRepository,
           useValue: mockRepository(),
@@ -58,6 +62,7 @@ describe('StudentsService', () => {
 
     service = module.get<StudentsService>(StudentsService);
     fileService = module.get(FilesService);
+    httpService = module.get(HttpService);
     studentRepository = module.get(StudentsRepository);
     examRepository = module.get(ExamsRepository);
     examUsersRepository = module.get(ExamsUsersRepository);
@@ -125,6 +130,22 @@ describe('StudentsService', () => {
       }
     });
     //나머진 업로드 과정 동일하므로 생략
+  });
+
+  describe('checkSelfAuthentication', () => {
+    it('실패(student 부재)', async () => {
+      try {
+        const updateDTO = { name: '안녕', studentID: '170604' };
+        studentRepository.findOne.mockReturnValue(null);
+        await service.checkSelfAuthentication(
+          '1',
+          updateDTO,
+          {} as Express.Multer.File,
+        );
+      } catch (e) {
+        expect(e).toBeInstanceOf(UnauthorizedException);
+      }
+    });
   });
 
   describe('uploadSelfAuthenticationImage', () => {

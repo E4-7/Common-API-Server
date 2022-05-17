@@ -121,6 +121,14 @@ export class StudentsController {
           type: 'string',
           format: 'binary',
         },
+        name: {
+          type: 'string',
+          format: 'text',
+        },
+        studentID: {
+          type: 'string',
+          format: 'text',
+        },
       },
     },
   })
@@ -152,6 +160,14 @@ export class StudentsController {
         file: {
           type: 'string',
           format: 'binary',
+        },
+        name: {
+          type: 'string',
+          format: 'text',
+        },
+        studentID: {
+          type: 'string',
+          format: 'text',
         },
       },
     },

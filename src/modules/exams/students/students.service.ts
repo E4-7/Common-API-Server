@@ -125,15 +125,13 @@ export class StudentsService {
     formData.append('name', findStudentDTO.name);
     formData.append('id', findStudentDTO.studentID.toString());
     formData.append('imagez', Buffer.from(file.buffer), file.originalname);
-
+    console.log('aa');
     try {
-      const { data } = await axios.post(
-        `${IMAGE_CHECK_SERVER_URL}ocr/`,
-        formData,
-        {
+      const { data } = await this.httpService
+        .post(`${IMAGE_CHECK_SERVER_URL}ocr/`, formData, {
           headers: formData.getHeaders(),
-        },
-      );
+        })
+        .toPromise();
       return {
         student,
         data,
