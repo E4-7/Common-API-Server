@@ -111,11 +111,12 @@ export class StudentsService {
     findStudentDTO: FindStudentDto,
     file: Express.Multer.File,
   ) {
+    const room = await this.examRepository.findOne({ where: { id: examId } });
     const student = await this.studentRepository.findOne({
       where: { ExamId: examId, studentID: +findStudentDTO.studentID },
       relations: ['ExamAnswer', 'CertificatedImage'],
     });
-    if (!student) {
+    if (!student || !room) {
       throw new UnauthorizedException();
     }
     // 학생증 인증 체크
@@ -125,7 +126,6 @@ export class StudentsService {
     formData.append('name', findStudentDTO.name);
     formData.append('id', findStudentDTO.studentID.toString());
     formData.append('imagez', Buffer.from(file.buffer), file.originalname);
-    console.log('aa');
     try {
       const { data } = await this.httpService
         .post(`${IMAGE_CHECK_SERVER_URL}ocr/`, formData, {
@@ -133,6 +133,7 @@ export class StudentsService {
         })
         .toPromise();
       return {
+        room,
         student,
         data,
       };
