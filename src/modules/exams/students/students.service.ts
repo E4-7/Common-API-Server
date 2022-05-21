@@ -98,7 +98,7 @@ export class StudentsService {
       throw new UnauthorizedException();
     }
     if (student.ExamAnswer) {
-      await this.fileService.deleteFile(student.CertificatedImage.key);
+      await this.fileService.deleteFile(student.ExamAnswer.key);
     }
     const uploadedFile = await this.fileService.uploadFile(file);
     student.ExamAnswer = uploadedFile;
@@ -111,7 +111,10 @@ export class StudentsService {
     findStudentDTO: FindStudentDto,
     file: Express.Multer.File,
   ) {
-    const room = await this.examRepository.findOne({ where: { id: examId } });
+    const room = await this.examRepository.findOne({ 
+         where: { id: examId },
+         relations: ['ExamPaper'],
+    });
     const student = await this.studentRepository.findOne({
       where: { ExamId: examId, studentID: +findStudentDTO.studentID },
       relations: ['ExamAnswer', 'CertificatedImage'],
@@ -146,12 +149,16 @@ export class StudentsService {
     examId: string,
     findStudentDTO: FindStudentDto,
     file: Express.Multer.File,
-  ) {
+    ) {
+    const room = await this.examRepository.findOne({
+         where: { id: examId },
+         relations: ['ExamPaper'],
+    });
     const student = await this.studentRepository.findOne({
       where: { ExamId: examId, studentID: +findStudentDTO.studentID },
       relations: ['ExamAnswer', 'CertificatedImage'],
     });
-    if (!student) {
+    if (!student || !room) {
       throw new UnauthorizedException();
     }
     if (student.CertificatedImage) {
@@ -160,7 +167,7 @@ export class StudentsService {
     const uploadedFile = await this.fileService.uploadFile(file);
     student.CertificatedImage = uploadedFile;
     const savedStudent = await this.studentRepository.save(student);
-    return savedStudent;
+    return {room, student:savedStudent};
   }
 
   async update(

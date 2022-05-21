@@ -110,7 +110,7 @@ async function bootstrap() {
   app.use(passport.initialize());
   app.use(passport.session());
 
-  const PORT = configService.get('app.port') || 3000;
+  const PORT = configService.get('app.port') || 80;
 
   await app.listen(PORT);
   console.log(`server listening on port ${PORT}`);

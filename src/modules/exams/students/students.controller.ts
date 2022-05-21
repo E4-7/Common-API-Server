@@ -97,7 +97,7 @@ export class StudentsController {
   async uploadAnswer(
     @Param('examId') examId: string,
     @Body() findStudentDTO: FindStudentDto,
-    @UploadedFile(new ParsePdfPipe(FileSize._10MB)) file: Express.Multer.File,
+    @UploadedFile(new ParseImagePipe(FileSize._10MB)) file: Express.Multer.File,
   ) {
     return await this.studentsService.uploadAnswer(
       examId,

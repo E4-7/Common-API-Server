@@ -22,6 +22,8 @@ import { UserRole } from '../users/constants/user-role.enum';
 import { Transactional } from 'typeorm-transactional-cls-hooked';
 import { ConfigService } from '@nestjs/config';
 import { RtcRole, RtcTokenBuilder } from 'agora-access-token';
+import { v4 as uuidv4 } from 'uuid';
+
 
 @Injectable()
 export class ExamsService {
@@ -37,6 +39,7 @@ export class ExamsService {
   @Transactional()
   async create(createExamDto: CreateExamDto, userId: string) {
     const exam = this.examsRepository.create();
+    exam.id= uuidv4();
     exam.OwnerId = userId;
     exam.exam_time = createExamDto.exam_time;
     exam.is_openbook = createExamDto.is_openbook;
@@ -65,7 +68,7 @@ export class ExamsService {
       appId ?? '',
       appCertificate ?? '',
       channel ?? '',
-      123,
+      0,
       role,
       privilegeExpiredTs,
     );
