@@ -111,9 +111,9 @@ export class StudentsService {
     findStudentDTO: FindStudentDto,
     file: Express.Multer.File,
   ) {
-    const room = await this.examRepository.findOne({ 
-         where: { id: examId },
-         relations: ['ExamPaper'],
+    const room = await this.examRepository.findOne({
+      where: { id: examId },
+      relations: ['ExamPaper'],
     });
     const student = await this.studentRepository.findOne({
       where: { ExamId: examId, studentID: +findStudentDTO.studentID },
@@ -135,6 +135,8 @@ export class StudentsService {
           headers: formData.getHeaders(),
         })
         .toPromise();
+      student.is_certified = true;
+      await this.studentRepository.save(student);
       return {
         room,
         student,
@@ -149,10 +151,10 @@ export class StudentsService {
     examId: string,
     findStudentDTO: FindStudentDto,
     file: Express.Multer.File,
-    ) {
+  ) {
     const room = await this.examRepository.findOne({
-         where: { id: examId },
-         relations: ['ExamPaper'],
+      where: { id: examId },
+      relations: ['ExamPaper'],
     });
     const student = await this.studentRepository.findOne({
       where: { ExamId: examId, studentID: +findStudentDTO.studentID },
@@ -165,9 +167,10 @@ export class StudentsService {
       await this.fileService.deleteFile(student.CertificatedImage.key);
     }
     const uploadedFile = await this.fileService.uploadFile(file);
+    student.is_certified = true;
     student.CertificatedImage = uploadedFile;
     const savedStudent = await this.studentRepository.save(student);
-    return {room, student:savedStudent};
+    return { room, student: savedStudent };
   }
 
   async update(
