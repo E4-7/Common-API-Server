@@ -69,6 +69,7 @@
     "typeorm": "^0.2.45",
     "typeorm-seeding": "^1.6.1",
     "typeorm-transactional-cls-hooked": "^0.1.21",
+    "uuid": "^8.3.2",
     "winston": "^3.6.0"
   },
   "devDependencies": {
