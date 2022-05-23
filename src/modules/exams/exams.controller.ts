@@ -74,17 +74,16 @@ export class ExamsController {
   }
 
   @ApiCookieAuth('connect.sid')
-  @ApiOperation({ summary: '시험에 속한 조교 조회하기' })
+  @ApiOperation({ summary: '한 개의 시험 정보 가져오기' })
   @ApiOkResponse({
     description: '성공',
-    type: UserInExamDto,
-    isArray: true,
+    type: MyExamDto,
   })
   @Roles(UserRole.PROFESSOR, UserRole.ASSISTANT)
   @HttpCode(HttpStatus.OK)
   @Get(':examId')
-  async findUserInExam(@User() user: Users, @Param('examId') examId: string) {
-    return await this.examService.findUserInExam(user.id, examId);
+  async findExamOne(@User() user: Users, @Param('examId') examId: string) {
+    return await this.examService.findExamOne(user.id, examId);
   }
 
   @ApiCookieAuth('connect.sid')
@@ -94,7 +93,6 @@ export class ExamsController {
     type: Exams,
   })
   @HttpCode(HttpStatus.OK)
-  @Roles(UserRole.PROFESSOR)
   @Patch(':examId')
   async update(
     @User() user: Users,
@@ -144,6 +142,20 @@ export class ExamsController {
     @Param('examId') examId: string,
   ) {
     return await this.examService.uploadPaper(user.id, examId, file);
+  }
+
+  @ApiCookieAuth('connect.sid')
+  @ApiOperation({ summary: '시험에 속한 조교 조회하기' })
+  @ApiOkResponse({
+    description: '성공',
+    type: UserInExamDto,
+    isArray: true,
+  })
+  @Roles(UserRole.PROFESSOR, UserRole.ASSISTANT)
+  @HttpCode(HttpStatus.OK)
+  @Get(':examId/assistant')
+  async findUserInExam(@User() user: Users, @Param('examId') examId: string) {
+    return await this.examService.findUserInExam(user.id, examId);
   }
 
   @ApiCookieAuth('connect.sid')

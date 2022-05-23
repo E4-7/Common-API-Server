@@ -3,6 +3,7 @@ import {
   Injectable,
   Logger,
   LoggerService,
+  NotFoundException,
   UnauthorizedException,
   UnprocessableEntityException,
 } from '@nestjs/common';
@@ -23,7 +24,7 @@ import { Transactional } from 'typeorm-transactional-cls-hooked';
 import { ConfigService } from '@nestjs/config';
 import { RtcRole, RtcTokenBuilder } from 'agora-access-token';
 import { v4 as uuidv4 } from 'uuid';
-
+import { ExamStatusDto } from './dto/exam-status.dto';
 
 @Injectable()
 export class ExamsService {
@@ -39,7 +40,7 @@ export class ExamsService {
   @Transactional()
   async create(createExamDto: CreateExamDto, userId: string) {
     const exam = this.examsRepository.create();
-    exam.id= uuidv4();
+    exam.id = uuidv4();
     exam.OwnerId = userId;
     exam.exam_time = createExamDto.exam_time;
     exam.is_openbook = createExamDto.is_openbook;
@@ -82,6 +83,17 @@ export class ExamsService {
       .leftJoin('exams.ExamPaper', 'paper')
       .where('ExamUsers.UserId = :userId', { userId })
       .getMany();
+  }
+
+  async findExamOne(userId: string, examId: string) {
+    return await this.examsUsersRepository
+      .createQueryBuilder('ExamUsers')
+      .select(['exams', 'ExamUsers.created_at', 'paper'])
+      .leftJoin('ExamUsers.Exam', 'exams')
+      .leftJoin('exams.ExamPaper', 'paper')
+      .where('ExamUsers.UserId = :userId', { userId })
+      .where('ExamUsers.ExamId = :examId', { examId })
+      .getOne();
   }
 
   async findUserInExam(userId: string, examId: string) {
