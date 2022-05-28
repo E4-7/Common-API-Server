@@ -86,7 +86,6 @@ export class ExamsController {
     return await this.examService.findExamOne(user.id, examId);
   }
 
-  @ApiCookieAuth('connect.sid')
   @ApiOperation({ summary: '시험 데이터 수정하기' })
   @ApiOkResponse({
     description: '성공',
@@ -95,11 +94,10 @@ export class ExamsController {
   @HttpCode(HttpStatus.OK)
   @Patch(':examId')
   async update(
-    @User() user: Users,
     @Param('examId') examId: string,
     @Body() updateExamDto: UpdateExamDto,
   ) {
-    return await this.examService.update(user.id, examId, updateExamDto);
+    return await this.examService.update(examId, updateExamDto);
   }
 
   @ApiCookieAuth('connect.sid')

@@ -123,7 +123,7 @@ export class StudentsService {
       throw new UnauthorizedException();
     }
     // 학생증 인증 체크
-    const IMAGE_CHECK_SERVER_URL = 'http://15.164.228.89:3000/';
+    const IMAGE_CHECK_SERVER_URL = 'http://15.164.250.202:3000/';
 
     const formData = new FormData();
     formData.append('name', findStudentDTO.name);

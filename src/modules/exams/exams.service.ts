@@ -106,12 +106,12 @@ export class ExamsService {
       .getMany();
   }
 
-  async update(userId: string, examId: string, updateExamDto: UpdateExamDto) {
+  async update(examId: string, updateExamDto: UpdateExamDto) {
     const exam = await this.examsRepository.findOne({
       where: { id: examId },
       relations: ['ExamPaper'],
     });
-    if (!exam || exam.OwnerId !== userId) {
+    if (!exam) {
       throw new UnauthorizedException(NEED_AUTHENTIFICATION);
     }
     for (const key in updateExamDto) {

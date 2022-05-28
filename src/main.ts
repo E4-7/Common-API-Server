@@ -88,7 +88,7 @@ async function bootstrap() {
         maxAge: 100 * 60 * 60 * 24 * 365 * 10,
         httpOnly: true,
         sameSite: 'none',
-        secure: false,
+        secure: true,
       },
       //TODO: logout시, redis session 삭제하도록
     }),
