@@ -3,7 +3,6 @@ import {
   Injectable,
   Logger,
   LoggerService,
-  NotFoundException,
   UnauthorizedException,
   UnprocessableEntityException,
 } from '@nestjs/common';
@@ -24,7 +23,8 @@ import { Transactional } from 'typeorm-transactional-cls-hooked';
 import { ConfigService } from '@nestjs/config';
 import { RtcRole, RtcTokenBuilder } from 'agora-access-token';
 import { v4 as uuidv4 } from 'uuid';
-import { ExamStatusDto } from './dto/exam-status.dto';
+import { HttpService } from '@nestjs/axios';
+import { StudentsRepository } from './students/repositories/students.repository';
 
 @Injectable()
 export class ExamsService {
@@ -32,9 +32,11 @@ export class ExamsService {
     @Inject(Logger) private readonly logger: LoggerService,
     private readonly examsRepository: ExamsRepository,
     private readonly examsUsersRepository: ExamsUsersRepository,
+    private readonly studentRepository: StudentsRepository,
     private fileService: FilesService,
     private userService: UsersService,
     private readonly configService: ConfigService,
+    private readonly httpService: HttpService,
   ) {}
 
   @Transactional()
@@ -147,6 +149,59 @@ export class ExamsService {
     exam.ExamPaper = uploadedFile;
     const savedExam = await this.examsRepository.save(exam);
     // TODO: driver에 따른 file service 분기 -> rollback시 aws 파일 delete 로직 추가
+    return savedExam;
+  }
+
+  @Transactional()
+  async uploadAnswerAndScore(
+    userId: string,
+    examId: string,
+    file: Express.Multer.File,
+  ) {
+    const exam = await this.examsRepository.findOne({
+      where: { id: examId },
+    });
+    //examId가 존재 x or 시험이 내 주최가 아님
+    if (!exam || exam.OwnerId !== userId) {
+      throw new UnauthorizedException(NEED_AUTHENTIFICATION);
+    }
+    let students = await this.studentRepository.find({
+      where: { ExamId: examId, is_certified: 1 },
+      relations: ['ExamAnswer'],
+    });
+    students = students.filter((student) => student.ExamAnswer);
+
+    const studentArray = students.map((student) => ({
+      name: student.name,
+      AnswerId: student.ExamAnswer.url,
+      studentID: student.studentID.toString(),
+      is_certified: student.is_certified === true ? 1 : 0,
+    }));
+    const uploadedFile = await this.fileService.uploadFile(file);
+    const AUTO_SCORE_SERVER_URL = 'http://34.64.202.206:3000';
+    const input = {
+      inputs: [
+        {
+          studentID: '0',
+          name: '1.1',
+          is_certified: 1,
+          AnswerId:
+            'https://media.discordapp.net/attachments/942086707128455199/979771228908838992/IMG_9257.jpg',
+        },
+        {
+          studentID: '0',
+          name: '정답',
+          is_certified: 1,
+          AnswerId: uploadedFile.url,
+        },
+        ...studentArray,
+      ],
+    };
+    const { data } = await this.httpService
+      .post(`${AUTO_SCORE_SERVER_URL}/auto-score`, input)
+      .toPromise();
+    exam.AnswerUrl = `${AUTO_SCORE_SERVER_URL}/${data}`;
+    const savedExam = await this.examsRepository.save(exam);
     return savedExam;
   }
 

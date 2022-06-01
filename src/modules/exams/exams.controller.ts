@@ -37,6 +37,7 @@ import { NoPasswordUserDto } from '../users/dto/no-password-user.dto';
 import { UserInExamDto } from './dto/user-in-exam.dto';
 import { MyExamDto } from './dto/my-exam.dto';
 import { Exams } from './entities/exams.entity';
+import { ParseImagePipe } from '../../common/pipes/parse-image.pipe';
 
 @ApiTags('EXAMS')
 @Controller('api/exams')
@@ -140,6 +141,36 @@ export class ExamsController {
     @Param('examId') examId: string,
   ) {
     return await this.examService.uploadPaper(user.id, examId, file);
+  }
+
+  @ApiCookieAuth('connect.sid')
+  @ApiOperation({ summary: '정답 업로드 및 자동 채점' })
+  @ApiOkResponse({
+    description: '성공',
+    type: Exams,
+  })
+  @Roles(UserRole.PROFESSOR)
+  @UseInterceptors(FileInterceptor('file'))
+  @HttpCode(HttpStatus.OK)
+  @ApiConsumes(Mimetype.MULTITYPE_FORM_DATA)
+  @ApiBody({
+    schema: {
+      type: 'object',
+      properties: {
+        file: {
+          type: 'string',
+          format: 'binary',
+        },
+      },
+    },
+  })
+  @Post(':examId/uploadAnswer')
+  async uploadAnswerAndScore(
+    @UploadedFile(new ParseImagePipe(FileSize._10MB)) file: Express.Multer.File,
+    @User() user: Users,
+    @Param('examId') examId: string,
+  ) {
+    return await this.examService.uploadAnswerAndScore(user.id, examId, file);
   }
 
   @ApiCookieAuth('connect.sid')
