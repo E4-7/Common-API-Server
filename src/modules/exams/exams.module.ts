@@ -9,10 +9,20 @@ import { ExamsUsersRepository } from './repositories/exams-users.repository';
 import { UsersModule } from '../users/users.module';
 import { StudentsModule } from './students/students.module';
 import { ConfigService } from '@nestjs/config';
+import { HttpModule } from '@nestjs/axios';
+import { StudentsRepository } from './students/repositories/students.repository';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([ExamsRepository, ExamsUsersRepository]),
+    HttpModule.register({
+      timeout: 20000,
+      maxRedirects: 5,
+    }),
+    TypeOrmModule.forFeature([
+      ExamsRepository,
+      ExamsUsersRepository,
+      StudentsRepository,
+    ]),
     FilesModule,
     UsersModule,
     StudentsModule,

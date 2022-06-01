@@ -123,6 +123,16 @@ export class Exams extends CommonUUIDEntity {
   })
   @JoinColumn([{ name: 'PaperId', referencedColumnName: 'id' }])
   ExamPaper: Files;
+
+  @IsString()
+  @IsNotEmpty()
+  @ApiProperty({
+    example: 'answer url',
+    description: 'answer file url',
+  })
+  @Column('varchar', { name: 'AnswerUrl', length: 250, nullable: true })
+  AnswerUrl: string;
+
   //시험 <-> 학생
   @OneToMany(() => Students, (students) => students.Exam)
   Students: Students[];
